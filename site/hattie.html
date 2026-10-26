@@ -786,9 +786,10 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
 
   /* ---------- bubble rain ---------- */
   var rain=document.getElementById("rain");
-  function bubbleRain(from,count){
+  function bubbleRain(from,count,small){
     var box=from.getBoundingClientRect(),cx=box.left+box.width/2,cy=box.top+box.height/2,H=innerHeight,W=innerWidth;
     count=calm?Math.min(10,count):count;
+    if(small)return bubblePuff(cx,cy,box,Math.min(8,count));
     for(var n=0;n<count;n++){
       var d=document.createElement("div"),size=14+Math.random()*30;
       d.className="drop-bubble";d.style.width=d.style.height=size+"px";d.style.background=pickColour();rain.appendChild(d);
@@ -800,6 +801,20 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
         {transform:"translate("+(sx+spread*.6+20)+"px,"+(sy+(H-sy)*.45)+"px) scale(1)",opacity:1,offset:.55},
         {transform:"translate("+(ex-15)+"px,"+(H+60)+"px) scale(1)",opacity:.9}];
       var a=d.animate(frames,{duration:calm?900:2200+Math.random()*1600,delay:Math.random()*350,easing:calm?"ease-out":"cubic-bezier(.3,.1,.6,1)",fill:"forwards"});
+      a.onfinish=(function(e){return function(){e.remove();};})(d);
+    }
+  }
+  /* a quick little puff for during games, so the bubbles don't cover what she taps next */
+  function bubblePuff(cx,cy,box,count){
+    for(var n=0;n<count;n++){
+      var d=document.createElement("div"),size=10+Math.random()*16;
+      d.className="drop-bubble";d.style.width=d.style.height=size+"px";d.style.background=pickColour();rain.appendChild(d);
+      var sx=cx+(Math.random()-.5)*Math.min(box.width,160)*.6-size/2,sy=cy+(Math.random()-.5)*Math.min(box.height,120)*.4-size/2;
+      var ex=sx+(Math.random()-.5)*50,ey=sy-30-Math.random()*50;
+      var frames=calm?[{transform:"translate("+sx+"px,"+sy+"px)",opacity:.9},{transform:"translate("+sx+"px,"+sy+"px)",opacity:0}]:[
+        {transform:"translate("+sx+"px,"+sy+"px) scale(.3)",opacity:.9},
+        {transform:"translate("+ex+"px,"+ey+"px) scale(1)",opacity:0}];
+      var a=d.animate(frames,{duration:calm?500:650+Math.random()*350,delay:Math.random()*120,easing:"ease-out",fill:"forwards"});
       a.onfinish=(function(e){return function(){e.remove();};})(d);
     }
   }
@@ -1351,7 +1366,7 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
     if(found.indexOf(res)<0){
       found.push(res);fresh[res]=1;
       mmsg.textContent="You made "+items[res][0]+"! "+items[res][1]+" New!";
-      bubbleRain(out,18);
+      bubbleRain(out,18,true);
       if(found.length%25===0){mmsg.textContent="Wow! You've found "+found.length+" things! 🎉";discoTime();}
     }else mmsg.textContent=items[res][0]+" again! Try something new.";
     saveMix();drawElements();
@@ -1414,7 +1429,7 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
       [1,-1].forEach(function(s){pieces.push({e:o.e,x:o.x,y:o.y,vx:o.vx*.6+nx*130*s,vy:Math.min(o.vy,0)*.3+ny*130*s-60,rot:o.rot,vr:s*rnd(3,6),ca:a-o.rot,side:s,r:o.r});});
       for(var j=0;j<16;j++)drops.push({x:o.x,y:o.y,vx:rnd(-220,220),vy:rnd(-260,80),life:rnd(.4,.8),c:o.c,s:rnd(2.5,5.5)});
       try{playNote(Math.min(11,swipeHits+2));}catch(e){}
-      if(o.kind==="star")bubbleRain(cv,10);
+      if(o.kind==="star")bubbleRain(cv,10,true);
     }
     function segDist(px,py,ax,ay,bx,by){var dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy,t=l?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/l)):0;var qx=ax+t*dx-px,qy=ay+t*dy-py;return Math.sqrt(qx*qx+qy*qy);}
     function pt(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now()};}
@@ -1549,7 +1564,7 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
         streak++;var nw=Math.min(W*.6,top.w+(streak>=3?6:0));
         tower.push({x:top.x-(nw-top.w)/2,w:nw});
         pop(streak>1?"Perfect x"+streak+"! ✨":"Perfect! ✨","#ffe066");
-        bubbleRain(cv,6);
+        bubbleRain(cv,6,true);
       }else{
         streak=0;
         tower.push({x:l,w:ov2});
@@ -1558,7 +1573,7 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
       }
       score++;
       try{playNote(score%12);}catch(e){}
-      if(score%10===0){pop(score+" high! 🎉","#ffa6da");bubbleRain(cv,16);}
+      if(score%10===0){pop(score+" high! 🎉","#ffa6da");bubbleRain(cv,16,true);}
       newMover();
     }
     function update(dt){
