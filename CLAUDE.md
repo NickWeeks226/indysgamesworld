@@ -9,7 +9,9 @@ Hattie's Worlds is her business idea: designing imaginary worlds and bringing th
   shows how many times each has been picked. The shared totals come from `site/counter.php`, which
   keeps them in `counts.json` on the server (that file is not in the repo).
 - Hattie's world is one file: `site/hattie.html` (HTML, CSS and JavaScript together).
-- George's world is `site/george.html`, a "coming soon" page for now.
+- George's world is `site/george.html`: George's Brain-Twister Arcade, which George made.
+  It has its own look (Bungee and Nunito fonts, bright arcade colours), so rule 3 below is for
+  Hattie's pages only. Its saved data uses the keys `pinhi`, `robotdesign` and the game high scores.
 - When a change is committed and pushed to `main`, GitHub Actions (`.github/workflows/deploy.yml`)
   uploads `site/` to the IONOS webspace folder `/hattiesworlds`. Do not edit the workflow.
 - The site runs on Hattie's iPad as a home-screen web app, so it must work well on touch screens
