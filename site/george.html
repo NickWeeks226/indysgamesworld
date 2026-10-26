@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>George's World</title>
+<meta name="theme-color" content="#bfe0ff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#bfe0ff;
+  color-scheme:light;
+  --ink:#2b2050;
+  --muted:#4f4380;
+  --pink:#ff6fbf;
+  --purple:#9a63ff;
+  --blue:#4fa3ff;
+  --blue-soft:#e6f2ff;
+  --deep-purple:#4a2690;
+  --drop:#2b2050;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:"Gaegu","Comic Sans MS","Chalkboard SE","Marker Felt",cursive;font-size:1.25rem}
+.page{max-width:760px;margin:0 auto;padding:clamp(16px,4vw,44px);text-align:center}
+.btn{display:inline-block;text-decoration:none;font-family:inherit;font-weight:700;font-size:1.15rem;color:var(--ink);
+  background:#fff;padding:4px 16px;border:3px solid var(--ink);
+  border-radius:255px 16px 225px 16px/16px 225px 16px 255px;box-shadow:5px 6px 0 var(--drop);
+  transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translate(-2px,-3px);box-shadow:8px 9px 0 var(--drop)}
+.btn:active{transform:translate(3px,4px);box-shadow:1px 2px 0 var(--drop)}
+.btn:focus-visible{outline:4px dashed var(--pink);outline-offset:4px}
+.top{text-align:left;margin-bottom:clamp(18px,3vw,30px)}
+.sign{background:var(--blue-soft);border:3px solid var(--ink);
+  border-radius:16px 225px 16px 255px/255px 16px 225px 16px;box-shadow:5px 6px 0 var(--drop);
+  padding:clamp(20px,4vw,40px) clamp(16px,4vw,36px)}
+h1{margin:0;font-size:clamp(2.4rem,7vw,3.6rem);line-height:1;color:#fff;text-shadow:3px 3px 0 var(--deep-purple)}
+.big{font-size:clamp(4rem,14vw,6.5rem);line-height:1;margin:14px 0 6px}
+p{font-size:clamp(1.35rem,3vw,1.7rem);margin:10px 0 0}
+.soon{display:inline-block;margin-top:18px;background:var(--pink);color:#fff;font-weight:700;font-size:1.5rem;
+  border:3px solid var(--ink);border-radius:20px;padding:2px 18px;transform:rotate(-2deg)}
+@media (prefers-reduced-motion:no-preference){
+  .big{animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <div class="top"><a class="btn" href="./">🌍 Pick a world</a></div>
+  <div class="sign">
+    <h1>George's World</h1>
+    <div class="big" aria-hidden="true">🚧</div>
+    <p>George is busy dreaming it up!</p>
+    <p>Come back soon to explore.</p>
+    <span class="soon">Coming soon</span>
+  </div>
+</main>
+</body>
+</html>
