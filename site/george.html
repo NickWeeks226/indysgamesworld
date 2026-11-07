@@ -63,14 +63,29 @@ label.tw input{width:1.3rem;height:1.3rem;accent-color:var(--pink)}
 .pad button{font-size:1.5rem}
 .pad .u{grid-column:2}.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
 .palette{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.9rem 0 .6rem}
-.blk{font:inherit;font-weight:800;padding:.45rem .7rem;border:3px solid var(--edge);border-radius:10px;color:#14213d;box-shadow:0 3px 0 var(--edge);cursor:pointer}
-.blk.F{background:#3ddc84}.blk.J{background:#ff8c42}.blk.I{background:#ff9ec4}.blk.E{background:#d9c2ff}
+.palette{gap:.9rem .6rem}
 .rep{display:inline-flex;gap:.25rem;align-items:center}
 .mini{font:inherit;font-weight:800;width:2rem;height:2rem;border:3px solid var(--edge);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
-.prog .blk.in1{margin-left:0}.blk.L{background:#7cc4ff}.blk.R{background:#ffd23f}.blk.P{background:#c77dff}
-.blk.now{outline:4px solid var(--pink);outline-offset:2px;transform:translateY(-3px)}
-.prog{display:flex;flex-wrap:wrap;gap:.4rem;min-height:58px;border:3px dashed var(--soft);border-radius:14px;padding:.5rem;align-items:center}
-.prog:empty::before{content:"Your program goes here";color:var(--soft)}
+/* Scratch-style blocks: a notch on top and a tab underneath so they click together */
+.sb{--c:#4c97ff;--d:#3373cc;position:relative;display:inline-flex;align-items:center;gap:.4rem;font:inherit;font-weight:800;font-size:1rem;line-height:1.2;
+  color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);background:var(--c);border:2px solid var(--d);border-radius:6px;padding:.55rem .9rem;min-height:44px;cursor:pointer;text-align:left}
+.sb::before{content:"";position:absolute;top:-2px;left:14px;width:24px;height:7px;background:var(--card);border:2px solid var(--d);border-top:0;border-radius:0 0 7px 7px}
+.sb::after{content:"";position:absolute;bottom:-9px;left:14px;width:24px;height:7px;background:var(--c);border:2px solid var(--d);border-top:0;border-radius:0 0 7px 7px;z-index:1}
+.sb.control{--c:#ffab19;--d:#cf8b17}
+.sb.hat{--c:#ffbf00;--d:#cc9900;border-radius:22px 22px 6px 6px;padding-top:.8rem;cursor:default}
+.sb.hat::before{display:none}
+.sb .num{display:inline-block;min-width:1.9rem;text-align:center;background:#fff;color:#575e75;text-shadow:none;border-radius:999px;padding:0 .45rem}
+.sb.now{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--pink)}
+.prog{display:flex;flex-direction:column;align-items:flex-start;min-height:58px;border:3px dashed var(--soft);border-radius:14px;padding:.7rem .7rem 1.2rem}
+.cblk{display:flex;flex-direction:column;align-items:flex-start}
+.cblk>.ctop{border-bottom-left-radius:0}
+.cblk>.ctop::after{left:30px}
+.cin{display:flex;flex-direction:column;align-items:flex-start;border-left:18px solid #ffab19;box-shadow:-2px 0 0 #cf8b17;margin-left:2px;padding:9px 0 2px;min-height:40px}
+.cblk>.carm{min-height:26px;width:110px;padding:0;border-top-left-radius:0}
+.cblk>.carm::before{display:none}
+.slot{min-height:36px;margin:6px 0 4px;padding:.25rem .7rem;border:2px dashed var(--soft);border-radius:6px;color:var(--soft);font-size:.85rem;display:flex;align-items:center}
+.cin>.slot:first-child{margin-top:2px}
+@media (prefers-reduced-motion:no-preference){.slot{animation:slotblink 1.4s ease-in-out infinite}@keyframes slotblink{50%{opacity:.45}}}
 .olctrl{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.8rem;min-height:3.4rem}
 .olctrl .btn{font-family:Bungee,Impact,sans-serif;font-weight:400;font-size:1.15rem;padding:.75rem 1.4rem;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 #olres table{width:100%;border-collapse:collapse;margin-top:.6rem;font-size:1rem}
@@ -98,6 +113,19 @@ button,canvas,nav,.pad,.olctrl,.palette,.prog,#logo{-webkit-user-select:none;use
 #tohome{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:50;font:inherit;font-family:Bungee,Impact,sans-serif;font-size:1rem;padding:.7rem 1rem;border:3px solid var(--edge);border-radius:999px;background:var(--sun);color:#14213d;box-shadow:0 4px 0 var(--edge);cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s}
 #tohome.show{opacity:1;pointer-events:auto}
 footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
+.lb{margin-top:1rem;border-top:3px dashed var(--soft);padding-top:.8rem}
+.lb h3{font-family:Bungee,Impact,sans-serif;font-weight:400;font-size:1.1rem;margin:0 0 .4rem;text-align:center}
+.lb ol{list-style:none;margin:0 auto;padding:0;max-width:340px}
+.lb li{display:flex;justify-content:space-between;gap:.6rem;padding:.25rem .7rem;border-radius:10px}
+.lb li:nth-child(odd){background:rgba(128,128,128,.12)}
+.lb li .rk{width:2rem;flex:none}.lb li .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb li .sc{font-weight:800}
+.lb li.me{outline:3px solid var(--sun)}
+.lb .none{text-align:center;color:var(--soft);margin:.2rem 0}
+.lbsave{max-width:420px;margin:0 auto .8rem;background:var(--sun);color:#14213d;border:3px solid var(--edge);border-radius:14px;padding:.7rem .8rem;text-align:center;box-shadow:0 4px 0 var(--edge)}
+.lbsave p{margin:0 0 .5rem;font-weight:800}
+.lbsave form{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.lbsave input{font:inherit;font-weight:800;width:10rem;padding:.4rem .6rem;border:3px solid var(--edge);border-radius:10px;background:#fff;color:#14213d;min-height:44px}
+.lbsave small{display:block;margin-top:.45rem;font-weight:600}
 .worlds-link{display:inline-flex;align-items:center;min-height:44px;font-weight:800;text-decoration:none;padding:.4rem 1rem;border:3px solid var(--edge);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--edge)}
 .worlds-link:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
 .worlds-link:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
@@ -200,17 +228,16 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
   <!-- CODING -->
   <section class="game" id="code">
     <h2>Robo Coder</h2>
-    <p class="how">Write a program to get the robot to the star. Grab every coin first, find keys to open doors, jump over water, and slide on ice. Use Repeat to loop blocks, and finish every loop with End. Each level has a block limit!</p>
+    <p class="how">Write a program to get the robot to the star. Grab every coin first, find keys to open doors, jump over water, and slide on ice. Tap the blocks to add them to your program. Put blocks inside a Repeat to loop them, and tap the bottom of the Repeat to carry on after it. Tap a block in your program to take it out. Each level has a block limit!</p>
     <canvas id="cdc" width="360" height="360" style="max-width:400px;margin:0 auto"></canvas>
     <p class="msg" id="cdinfo" style="margin-top:.5rem;font-size:1rem"></p>
     <div class="palette">
-      <button class="blk F" data-c="F">⬆️ Forward</button>
-      <button class="blk L" data-c="L">↩️ Turn left</button>
-      <button class="blk R" data-c="R">↪️ Turn right</button>
-      <button class="blk J" data-c="J">🦘 Jump</button>
-      <button class="blk I" data-c="I">🤔 If blocked, turn right</button>
-      <span class="rep"><button class="blk P" data-c="P">🔁 Repeat <b id="repn">3</b>×</button><button class="mini" id="repdown" aria-label="Fewer repeats">−</button><button class="mini" id="repup" aria-label="More repeats">+</button></span>
-      <button class="blk E" data-c="E">🔚 End repeat</button>
+      <button class="sb" data-c="F">move forward ⬆️</button>
+      <button class="sb" data-c="L">turn left ↺</button>
+      <button class="sb" data-c="R">turn right ↻</button>
+      <button class="sb" data-c="J">jump 🦘</button>
+      <button class="sb control" data-c="I">if blocked, turn right ↻</button>
+      <span class="rep"><button class="sb control" data-c="P">repeat <span class="num" id="repn">3</span> 🔁</button><button class="mini" id="repdown" aria-label="Fewer repeats">−</button><button class="mini" id="repup" aria-label="More repeats">+</button></span>
     </div>
     <div class="prog" id="prog" aria-label="Your program"></div>
     <div class="bar">
@@ -386,7 +413,7 @@ document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('nav button').forEach(x=>x.setAttribute('aria-selected',x===b));
   document.querySelectorAll('.game').forEach(g=>g.classList.toggle('on',g.id===b.dataset.g));
   active=b.dataset.g;
-  fitCanvases();
+  fitCanvases();lbLoad(active);
   const sec=document.getElementById(active);if(sec)requestAnimationFrame(()=>sec.scrollIntoView({behavior:'smooth',block:'start'}));
 });
 /* size each game to fit the screen (iPad, phone, desktop) */
@@ -442,7 +469,8 @@ function move(d){
   const a=mz.map[d],c=cell(mz.p.x,mz.p.y);if(c.w[a])return drawMaze();
   mz.p.x+=D[a][0];mz.p.y+=D[a][1];drawMaze();
   if(mz.p.x===mz.n-1&&mz.p.y===mz.n-1){
-    $('mzm').textContent='You escaped! Next level is bigger…';mz.level++;mz.n=Math.min(18,mz.n+2);setTimeout(genMaze,900);}
+    $('mzm').textContent='You escaped! Next level is bigger…';mz.level++;mz.n=Math.min(18,mz.n+2);setTimeout(genMaze,900);
+    lbOffer('maze',mz.level-1,`You've escaped ${mz.level-1} maze${mz.level>2?'s':''}!`);}
 }
 document.addEventListener('keydown',e=>{
   if(active==='maze'){const k={ArrowUp:0,KeyW:0,ArrowRight:1,KeyD:1,ArrowDown:2,KeyS:2,ArrowLeft:3,KeyA:3}[e.code];
@@ -629,6 +657,7 @@ function stepFoot(){
       ft.phase='done';ftScore();
       setTimeout(()=>{
         if(ft.cpu.length>=5){ft.mode='done';ftScore();
+          {const sv=ft.cpu.filter(x=>!x).length;lbOffer('foot',ft.goals+sv,`${ft.goals} goals + ${sv} saves = ${ft.goals+sv} points!`)}
           const win=ft.goals>ft.conc,lose=ft.goals<ft.conc;
           const w=win?`${ft.me.n.toUpperCase()} WIN! \uD83C\uDFC6`:lose?`${ft.them.n} win\u2026 the crowd is booing!`:'It\u2019s a draw!';
           $('ftm').textContent=`${w}  ${ft.me.n} ${ft.goals} \u2013 ${ft.conc} ${ft.them.n}. Press Restart to play again.`;
@@ -691,6 +720,7 @@ function stepRug(){
   a.b={x:240+(a.ex-240)*a.t,y:272+(a.ey-272)*a.t-Math.sin(a.t*Math.PI)*40,s:30-16*a.t};
   if(a.t>=1&&!a.done){a.done=true;rg.kicks++;const ok=a.ex>194&&a.ex<286&&a.ey<120;if(ok){rg.pts+=2;rg.cheer=70}
     $('rgm').textContent=(ok?'Over! Two points 🙌':a.ey>=120?'Not enough power — under the bar.':'Wide of the posts!')+(rg.kicks>=5?`  Final: ${rg.pts} points.`:'');
+    if(rg.kicks>=5)lbOffer('rug',rg.pts);
     $('rgs').textContent='Points '+rg.pts;
     setTimeout(()=>{rg.anim=null;rg.phase='aim';rg.t=0;newWind();if(rg.kicks<5)$('rgm').textContent='Next kick — lock your aim!'},1100);}
 }
@@ -718,7 +748,8 @@ function swing(){
   else $('crm').textContent='Swing and a miss…';
 }
 function endBall(text){cr.balls--;crText();
-  const over=cr.balls<=0||cr.outs>=3;$('crm').textContent=text+(over?`  Innings over: ${cr.runs} runs!`:'  Tap Swing for the next ball.');}
+  const over=cr.balls<=0||cr.outs>=3;$('crm').textContent=text+(over?`  Innings over: ${cr.runs} runs!`:'  Tap Swing for the next ball.');
+  if(over)lbOffer('cri',cr.runs);}
 function stepCri(){
   if(cr.bat>0)cr.bat=Math.max(0,cr.bat-0.08);
   if(cr.ball){const b=cr.ball;b.y+=b.y>150?b.v2:b.v;
@@ -754,7 +785,12 @@ $('crn').onclick=()=>{Object.assign(cr,{runs:0,outs:0,balls:12,ball:null,hit:nul
 
 /* ===================== CODING ===================== */
 const LEVELS=[
- {d:1,max:4,m:['S......G','........','........','........','........','........','........','........'],tip:'Loops! Only 4 blocks allowed. Hint: Repeat, then two blocks, then End.'},
+ {d:0,max:3,m:['........','........','........','........','...G....','........','...S....','........'],tip:'Tap "move forward" two times, then press Run!'},
+ {d:0,max:5,m:['........','........','........','........','....G...','..S.....','........','........'],tip:'Move forward, turn right, then keep going to the star!'},
+ {d:1,max:3,m:['........','........','........','........','.S....G.','........','........','........'],tip:'Try a Repeat! Set it to 5, then put "move forward" inside it.'},
+ {d:1,max:2,m:['........','........','........','........','..S~G...','........','........','........'],tip:'Water! Robots can’t swim, but "jump" hops right over it.'},
+ {d:0,max:4,m:['........','........','.G......','........','.c......','........','.S......','........'],tip:'Grab the coin on your way — the star only lights up when you have it!'},
+ {d:1,max:4,m:['S......G','........','........','........','........','........','........','........'],tip:'A long way to go, but only 4 blocks allowed! A Repeat loop will help.'},
  {d:0,max:6,m:['.......G','......c.','.....c..','....c...','...c....','..c.....','.c......','S.......'],tip:'Collect every coin \u2014 the star only lights up when you have them all. 6 blocks max!'},
  {d:2,max:15,m:['S..#....','...#..G.','...#....','...D....','...#....','k..#....','...#....','...#....'],tip:'That door is locked. Find the key first!'},
  {d:1,max:2,m:['........','.~~~~~~.','.~....~.','S~.G..~.','.~....~.','.~~~~~~.','........','........'],tip:'Water! Robots can\u2019t swim. Jump hops over one square. 2 blocks max!'},
@@ -765,9 +801,12 @@ const LEVELS=[
 ];
 const REPS=[2,3,4,5,6,7,8,10,20,50];let repi=1;
 const cdc=$('cdc'),cg=cdc.getContext('2d'),prog=[];
+let ins=0; // where the next block goes in prog (every Repeat P has a matching End E)
 const cd={lv:0,running:false,bot:null,now:-1,crash:false,m:null,got:0,coins:0,key:false};
 const DX=[0,1,0,-1],DY=[-1,0,1,0];
-const LABEL=t=>({F:'\u2B06\uFE0F Forward',L:'\u21A9\uFE0F Left',R:'\u21AA\uFE0F Right',J:'\uD83E\uDD98 Jump',I:'\uD83E\uDD14 If blocked \u21AA\uFE0F',E:'\uD83D\uDD1A End'}[t.c]||`\uD83D\uDD01 Repeat ${t.n}\u00D7`);
+const LABEL={F:'move forward \u2B06\uFE0F',L:'turn left \u21BA',R:'turn right \u21BB',J:'jump \uD83E\uDD98',I:'if blocked, turn right \u21BB'};
+const blockCount=()=>prog.filter(t=>t.c!=='E').length;
+function endOf(i){let depth=0;for(let j=i;j<prog.length;j++){if(prog[j].c==='P')depth++;else if(prog[j].c==='E'&&--depth===0)return j}return prog.length-1}
 function lvl(){return LEVELS[cd.lv]}
 function resetBot(){const L=lvl();cd.m=L.m.map(r=>r.split(''));cd.got=0;cd.key=false;cd.coins=0;
   for(let y=0;y<8;y++)for(let x=0;x<8;x++){const c=cd.m[y][x];if(c==='S')cd.bot={x,y,d:L.d};if(c==='c')cd.coins++}
@@ -794,17 +833,32 @@ function drawCode(){
   if(cd.key){cg.rotate(-b.d*Math.PI/2);cg.font='14px sans-serif';cg.fillText('\uD83D\uDD11',14,14)}
   cg.restore();
   $('cds').textContent=`Level ${cd.lv+1} of ${LEVELS.length}`;
-  $('cdinfo').textContent=`Blocks: ${prog.length} / ${lvl().max}`+(cd.coins?`   Coins: ${cd.got} / ${cd.coins}`:'')+(lvl().m.some(r=>r.includes('k'))?(cd.key?'   Key: got it!':'   Key: not yet'):'');
+  $('cdinfo').textContent=`Blocks: ${blockCount()} / ${lvl().max}`+(cd.coins?`   Coins: ${cd.got} / ${cd.coins}`:'')+(lvl().m.some(r=>r.includes('k'))?(cd.key?'   Key: got it!':'   Key: not yet'):'');
 }
 function drawProg(){
-  const box=$('prog');box.innerHTML='';let depth=0;
-  prog.forEach((t,i)=>{if(t.c==='E')depth=Math.max(0,depth-1);
-    const b=document.createElement('button');b.className='blk '+t.c+(i===cd.now?' now':'');b.textContent=LABEL(t);
-    if(depth>0)b.style.boxShadow=`0 3px 0 var(--edge), inset 0 0 0 ${depth*3}px rgba(199,125,255,.55)`;
-    b.title='Tap to remove';b.onclick=()=>{if(cd.running)return;prog.splice(i,1);drawProg();drawCode()};box.appendChild(b);
-    if(t.c==='P')depth++;});
+  const box=$('prog');box.innerHTML='';
+  const mk=(tag,cls,html)=>{const e=document.createElement(tag);e.className=cls;if(html)e.innerHTML=html;return e};
+  box.appendChild(mk('div','sb hat','when <b>Run ▶</b> clicked'));
+  const slot=()=>mk('div','slot','next block goes here');
+  const stack=[];let into=box;
+  prog.forEach((t,i)=>{
+    if(i===ins&&!cd.running)into.appendChild(slot());
+    if(t.c==='E'){ // bottom of a Repeat: tap it to carry on after the loop
+      const c=stack.pop(),arm=mk('button','sb control carm');arm.setAttribute('aria-label','Add the next block after this repeat');
+      arm.onclick=()=>{if(cd.running)return;ins=i+1;drawProg()};c.wrap.appendChild(arm);into=c.parent;return}
+    if(t.c==='P'){
+      const wrap=mk('div','cblk'),top=mk('button','sb control ctop'+(i===cd.now?' now':''),`repeat <span class="num">${t.n}</span> 🔁`),inner=mk('div','cin');
+      top.title='Tap the number to change it, or tap the block to take it out';
+      top.onclick=e=>{if(cd.running)return;
+        if(e.target.classList.contains('num')){t.n=REPS[(REPS.indexOf(t.n)+1)%REPS.length];drawProg();return}
+        const j=endOf(i);prog.splice(j,1);prog.splice(i,1);if(ins>j)ins--;if(ins>i)ins--;drawProg();drawCode()};
+      wrap.append(top,inner);into.appendChild(wrap);stack.push({wrap,parent:into});into=inner;return}
+    const b=mk('button','sb'+(t.c==='I'?' control':'')+(i===cd.now?' now':''),LABEL[t.c]);
+    b.title='Tap to take it out';b.onclick=()=>{if(cd.running)return;prog.splice(i,1);if(ins>i)ins--;drawProg();drawCode()};into.appendChild(b);
+  });
+  if(ins>=prog.length&&!cd.running)into.appendChild(slot());
 }
-function startLevel(){prog.length=0;resetBot();drawProg();drawCode();$('cdm').textContent=lvl().tip}
+function startLevel(){prog.length=0;ins=0;resetBot();drawProg();drawCode();$('cdm').textContent=lvl().tip}
 function flatten(){
   const steps=[];
   function run(i,out){while(i<prog.length){const t=prog[i];if(t.c==='E')return i+1;
@@ -813,14 +867,21 @@ function flatten(){
   let i=0;while(i<prog.length){const j=run(i,steps);i=j>i?j:i+1}
   return steps;
 }
-document.querySelectorAll('.palette .blk').forEach(b=>b.onclick=()=>{
+document.querySelectorAll('.palette [data-c]').forEach(b=>b.onclick=()=>{
   if(cd.running)return;const max=lvl().max;
-  if(prog.length>=max){$('cdm').textContent=`Block limit reached (${max})! Can a Repeat loop do the same job with fewer blocks?`;return}
-  const c=b.dataset.c;prog.push(c==='P'?{c,n:REPS[repi]}:{c});drawProg();drawCode();});
+  if(blockCount()>=max){$('cdm').textContent=`Block limit reached (${max})! Can a Repeat loop do the same job with fewer blocks?`;return}
+  const c=b.dataset.c;
+  if(c==='P'){prog.splice(ins,0,{c,n:REPS[repi]},{c:'E'});ins++}
+  else{prog.splice(ins,0,{c});ins++}
+  drawProg();drawCode();});
 $('repup').onclick=()=>{repi=Math.min(REPS.length-1,repi+1);$('repn').textContent=REPS[repi]};
 $('repdown').onclick=()=>{repi=Math.max(0,repi-1);$('repn').textContent=REPS[repi]};
-$('cdundo').onclick=()=>{if(cd.running)return;prog.pop();drawProg();drawCode()};
-$('cdclear').onclick=()=>{if(cd.running)return;prog.length=0;resetBot();drawProg();drawCode();$('cdm').textContent='Cleared! Start again.'};
+function undo(){const k=ins-1;if(k<0)return;const t=prog[k];
+  if(t.c==='E'){ins=k;return undo()} // step back inside the loop
+  if(t.c==='P'){const j=endOf(k);prog.splice(j,1);prog.splice(k,1);ins=k;return}
+  prog.splice(k,1);ins=k}
+$('cdundo').onclick=()=>{if(cd.running)return;undo();drawProg();drawCode()};
+$('cdclear').onclick=()=>{if(cd.running)return;prog.length=0;ins=0;resetBot();drawProg();drawCode();$('cdm').textContent='Cleared! Start again.'};
 function canEnter(x,y){if(x<0||y<0||x>7||y>7)return false;const t=cd.m[y][x];return t!=='#'&&t!=='~'&&!(t==='D'&&!cd.key)}
 function whyNot(x,y){if(x<0||y<0||x>7||y>7)return'BONK! The robot hit the edge.';const t=cd.m[y][x];
   return t==='~'?'SPLASH! Robots can\u2019t swim.':t==='D'?'The door is locked \u2014 you need the key!':'BONK! The robot crashed into a rock.'}
@@ -849,6 +910,7 @@ $('cdrun').onclick=()=>{
     drawCode();
     if(cd.m[b.y][b.x]==='G'){
       if(cd.got>=cd.coins){cd.running=false;cd.now=-1;drawProg();
+        lbOffer('code',cd.lv+1,`You've finished ${cd.lv+1} level${cd.lv?'s':''}!`);
         if(cd.lv<LEVELS.length-1){$('cdm').textContent=`You did it! \uD83C\uDF89 Level ${cd.lv+2} next\u2026`;setTimeout(()=>{cd.lv++;startLevel()},1700)}
         else{$('cdm').textContent='YOU BEAT EVERY LEVEL! You\u2019re a real coder! \uD83E\uDD16\uD83C\uDFC6';if(typeof playCheer==='function')playCheer()}
         return}
@@ -971,6 +1033,8 @@ function ceremony(){
   $('olm').textContent=won?`${myName().toUpperCase()} WINS THE ROBOT OLYMPICS! \uD83C\uDFC6\uD83E\uDD16`:`${BOTS[st[0].i].n} wins the Games! ${myName()} came ${['1st','2nd','3rd','4th'][st.findIndex(s=>s.i===0)]}.`;
   if(won){ol.cheer=300;playCheer&&playCheer();ol.confetti=Array.from({length:120},()=>({x:Math.random()*480,y:-Math.random()*300,v:1+Math.random()*2,c:SHIRTS[Math.floor(Math.random()*SHIRTS.length)],r:Math.random()*6}))}
   $('olres').innerHTML=medalTable();setCtrl([['Play again \uD83D\uDD01',olRestart,'big']]);
+  const m=ol.medals[0],mp=m[0]*3+m[1]*2+m[2];
+  lbOffer('olymp',mp,`${m[0]} gold, ${m[1]} silver, ${m[2]} bronze = ${mp} medal points!`);
 }
 function olRestart(){ol.ev=0;ol.medals=BOTS.map(()=>[0,0,0]);ol.confetti=[];$('olres').innerHTML='';olIntro()}
 $('olrestart').onclick=olRestart;
@@ -1132,7 +1196,7 @@ function stepPin(){
   const before=pn.balls.length;pn.balls=pn.balls.filter(b=>b.y<580);
   if(before&&!pn.balls.length&&!pn.over){
     pn.left--;pnHud();
-    if(pn.left<=0){pn.over=true;$('pnm').textContent=`GAME OVER! You scored ${pn.score}.`+(pn.score>pn.hi?' NEW HIGH SCORE! \uD83C\uDFC6':'');
+    if(pn.left<=0){pn.over=true;$('pnm').textContent=`GAME OVER! You scored ${pn.score}.`+(pn.score>pn.hi?' NEW HIGH SCORE! \uD83C\uDFC6':'');lbOffer('pin',pn.score);
       if(pn.score>pn.hi){pn.hi=pn.score;try{localStorage.setItem('pinhi',pn.hi)}catch(e){}pnHud();playCheer&&playCheer()}}
     else{banner('Ball lost!',80);setTimeout(()=>{if(!pn.over)pnNewBall()},700)}
   }
@@ -1184,6 +1248,62 @@ pnNew();
 function hiGet(k){try{return +localStorage.getItem(k)||0}catch(e){return 0}}
 function hiSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 
+/* ===================== LEADERBOARDS ===================== */
+// One shared board per game, kept by leaderboard.php. Games call lbOffer() when there's a score to save.
+const LB={maze:{u:'levels'},foot:{u:'points'},rug:{u:'points'},cri:{u:'runs'},code:{u:'levels'},olymp:{u:'medal points'},
+  pin:{u:'points'},space:{u:'points'},golf:{u:'strokes',low:true},snake:{u:'points'},whack:{u:'points'}};
+const lbLists={};
+function lbEl(g){return document.querySelector(`.lb[data-game="${g}"]`)}
+function lbDraw(g,me){
+  const box=lbEl(g).querySelector('.lbbody'),list=lbLists[g];box.innerHTML='';
+  if(list===null){box.innerHTML='<p class="none">The leaderboard isn’t available right now.</p>';return}
+  if(!list){box.innerHTML='<p class="none">Loading…</p>';return}
+  if(!list.length){box.innerHTML='<p class="none">No scores yet — be the first!</p>';return}
+  const ol=document.createElement('ol');
+  list.forEach((r,i)=>{const li=document.createElement('li');if(me&&r.n.toLowerCase()===me.toLowerCase())li.className='me';
+    const rk=document.createElement('span');rk.className='rk';rk.textContent=['🥇','🥈','🥉'][i]||(i+1)+'.';
+    const nm=document.createElement('span');nm.className='nm';nm.textContent=r.n;
+    const sc=document.createElement('span');sc.className='sc';sc.textContent=r.s+' '+(r.s===1?LB[g].u.replace(/s$/,''):LB[g].u);
+    li.append(rk,nm,sc);ol.appendChild(li)});
+  box.appendChild(ol);
+}
+function lbLoad(g){
+  if(!LB[g])return;
+  fetch('leaderboard.php?game='+g,{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json()})
+    .then(d=>{lbLists[g]=d.scores||[];lbDraw(g)}).catch(()=>{lbLists[g]=null;lbDraw(g)});
+}
+function lbName(){try{return localStorage.getItem('lbname')||''}catch(e){return ''}}
+function lbOffer(g,score,what){
+  if(!LB[g]||!(score>0))return;
+  const el=lbEl(g),wrap=el.querySelector('.lbsave');
+  wrap.hidden=false;wrap.innerHTML='';
+  const p=document.createElement('p');p.textContent=`${what||'You got '+score+' '+LB[g].u+'!'} Put your name on the leaderboard?`;
+  const f=document.createElement('form'),inp=document.createElement('input'),ok=document.createElement('button'),no=document.createElement('button');
+  inp.maxLength=12;inp.value=lbName();inp.placeholder='Your name';inp.setAttribute('aria-label','Your name');inp.autocomplete='off';
+  ok.className='btn';ok.type='submit';ok.textContent='Save 🏆';no.className='btn alt';no.type='button';no.textContent='No thanks';
+  const tip=document.createElement('small');tip.textContent='Everyone can see the leaderboard, so just use your first name or a nickname.';
+  f.append(inp,ok,no);wrap.append(p,f,tip);
+  no.onclick=()=>{wrap.hidden=true};
+  f.onsubmit=e=>{e.preventDefault();
+    const name=inp.value.replace(/\s+/g,' ').trim();
+    if(!/^[\p{L}\p{N} ]{1,12}$/u.test(name)){tip.textContent='Names can only use letters, numbers and spaces.';return}
+    try{localStorage.setItem('lbname',name)}catch(e){}
+    ok.disabled=true;tip.textContent='Saving…';
+    const body=new URLSearchParams({game:g,name,score:String(score)});
+    fetch('leaderboard.php',{method:'POST',body,cache:'no-store'}).then(r=>r.json().then(d=>({ok:r.ok,d})))
+      .then(({ok:good,d})=>{
+        if(!good){ok.disabled=false;tip.textContent=d.error==='rude'?'Oops! Please pick a different name.':d.error==='name'?'Names can only use letters, numbers and spaces.':'That score couldn’t be saved.';return}
+        lbLists[g]=d.scores;lbDraw(g,name);wrap.innerHTML='';const done=document.createElement('p');done.textContent=`Saved! Well done, ${name}! 🎉`;wrap.appendChild(done);
+        setTimeout(()=>{wrap.hidden=true},2500)})
+      .catch(()=>{ok.disabled=false;tip.textContent='The leaderboard isn’t available right now. Try again later.'});
+  };
+}
+Object.keys(LB).forEach(g=>{const sec=document.getElementById(g);if(!sec)return;
+  const el=document.createElement('div');el.className='lb';el.dataset.game=g;
+  el.innerHTML='<div class="lbsave" hidden></div><h3>🏆 Leaderboard</h3><div class="lbbody"></div>'+(LB[g].low?'<p class="none">Fewest strokes wins!</p>':'');
+  sec.appendChild(el);lbDraw(g)});
+lbLoad(active);
+
 /* ===================== SPACE DODGE ===================== */
 const spc=$('spc'),sg=spc.getContext('2d');
 const SPW=360,SPH=480;
@@ -1214,7 +1334,7 @@ function stepSpace(){
 }
 function spBoom(){sp.state='over';for(let i=0;i<50;i++){const a=Math.random()*6.3,v=rnd(1,6);sp.parts.push({x:sp.x,y:sp.y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:rnd(30,60),c:['#ffd23f','#ff8c42','#ff4f8b','#fff'][i%4]})}
   const best=sp.score>sp.hi;if(best){sp.hi=sp.score;hiSet('spacehi',sp.hi);playCheer&&playCheer()}
-  $('spm').textContent=`KABOOM! You scored ${sp.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to try again.');spHud()}
+  $('spm').textContent=`KABOOM! You scored ${sp.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to try again.');spHud();lbOffer('space',sp.score)}
 function drawSpace(){
   const g=sg;g.fillStyle='#070b1e';g.fillRect(0,0,SPW,SPH);
   for(const s of spStars){g.fillStyle=`rgba(255,255,255,${.3+s.s/3})`;g.fillRect(s.x,s.y,s.s,s.s)}
@@ -1310,7 +1430,8 @@ function gfSunk(){const H=gfHole();gf.card.push(gf.strokes);const d=gf.strokes-H
   setTimeout(()=>{if(gf.h<HOLES.length-1){gf.h++;gfStartHole()}else gfFinish()},1800)}
 function gfCard(){let tot=0,par=0;let h='<table><tr><th>Hole</th>'+HOLES.map((_,i)=>`<th>${i+1}</th>`).join('')+'<th>Total</th></tr><tr><td>Par</td>'+HOLES.map(H=>{par+=H.par;return`<td>${H.par}</td>`}).join('')+`<td>${par}</td></tr><tr><td><b>You</b></td>`;
   HOLES.forEach((_,i)=>{const v=gf.card[i];if(v!==undefined)tot+=v;h+=`<td><b>${v??''}</b></td>`});h+=`<td><b>${tot}</b></td></tr></table>`;$('gfcard').innerHTML=h;return[tot,par]}
-function gfFinish(){gf.state='done';const[t,p]=gfCard(),d=t-p;$('gfm').textContent=`Course complete! ${t} strokes (par ${p}): `+(d<0?`${-d} under par \u2014 amazing! \uD83C\uDFC6`:d===0?'exactly par \u2014 great golf!':`${d} over par. Press Restart to try again!`);if(d<=0)playCheer&&playCheer()}
+function gfFinish(){gf.state='done';const[t,p]=gfCard(),d=t-p;$('gfm').textContent=`Course complete! ${t} strokes (par ${p}): `+(d<0?`${-d} under par \u2014 amazing! \uD83C\uDFC6`:d===0?'exactly par \u2014 great golf!':`${d} over par. Press Restart to try again!`);if(d<=0)playCheer&&playCheer();
+  lbOffer('golf',t,`Course complete in ${t} strokes!`)}
 gfc.addEventListener('pointerdown',e=>{if(gf.state!=='aim')return;e.preventDefault();const p=pos(gfc,e);gf.drag={sx:p.x,sy:p.y,x:p.x,y:p.y};gfc.setPointerCapture&&gfc.setPointerCapture(e.pointerId)});
 gfc.addEventListener('pointermove',e=>{if(!gf.drag)return;const p=pos(gfc,e);gf.drag.x=p.x;gf.drag.y=p.y});
 gfc.addEventListener('pointerup',()=>{const d=gf.drag;gf.drag=null;if(!d||gf.state!=='aim')return;let dx=d.sx-d.x,dy=d.sy-d.y,l=Math.hypot(dx,dy);if(l<8)return;
@@ -1513,7 +1634,7 @@ function snMove(s){
     if(t==='ghost'){s.eff.ghost=480;if(me)$('snm').textContent=`${s.name}: GHOST MODE! Go through walls! \uD83D\uDC7B`}}
 }
 function snOver(msg){sn.state='over';const p=snP1();const best=p.score>sn.hi;if(best){sn.hi=p.score;hiSet('snakehi',sn.hi);playCheer&&playCheer()}
-  snHud();$('snm').textContent=msg+` You scored ${p.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to play again.')}
+  snHud();$('snm').textContent=msg+` You scored ${p.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to play again.');lbOffer('snake',p.score)}
 function snEndBattle(){sn.state='over';const r=[...sn.snakes].sort((a,b)=>b.score-a.score);const w=r[0];
   $('snm').textContent=`Time\u2019s up! ${w.name} WINS with ${w.score} points! `+r.map((s,i)=>`${i+1}. ${s.name} ${s.score}`).join('  ');
   if(!w.ai)playCheer&&playCheer();else if(typeof playBoo==='function'&&sn.mode==='cpu')playBoo();snHud()}
@@ -1584,7 +1705,7 @@ function stepWhack(){
   for(const h of WH){if(h.type){if(h.hit>0){h.hit--;h.up=Math.max(0,h.up-.06);if(h.hit===0){h.type=null;h.up=0}}else{h.life--;h.up=h.life>12?Math.min(1,h.up+.15):Math.max(0,h.up-.12);if(h.life<=0){h.type=null;h.up=0}}}}
   if(wk.state!=='play')return;
   wk.time--;if(wk.time%60===0)wkHud();
-  if(wk.time<=0){wk.state='over';const best=wk.score>wk.hi;if(best){wk.hi=wk.score;hiSet('whackhi',wk.hi);playCheer&&playCheer()}wkHud();$('wkm').textContent=`Time\u2019s up! You scored ${wk.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to go again.');return}
+  if(wk.time<=0){wk.state='over';const best=wk.score>wk.hi;if(best){wk.hi=wk.score;hiSet('whackhi',wk.hi);playCheer&&playCheer()}wkHud();$('wkm').textContent=`Time\u2019s up! You scored ${wk.score}.`+(best?' NEW HIGH SCORE! \uD83C\uDFC6':' Press Start to go again.');lbOffer('whack',wk.score);return}
   const prog=1-wk.time/(45*60);
   if(--wk.spawn<=0){const free=WH.filter(h=>!h.type);if(free.length){const h=free[Math.floor(Math.random()*free.length)],r=Math.random();
       h.type=r<.1?'gold':r<.32?'robot':'mole';h.life=Math.floor(95-prog*50)*(h.type==='gold'?.7:1);h.up=0;h.hit=0}

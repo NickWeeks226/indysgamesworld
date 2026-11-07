@@ -11,7 +11,11 @@ Hattie's Worlds is her business idea: designing imaginary worlds and bringing th
 - Hattie's world is one file: `site/hattie.html` (HTML, CSS and JavaScript together).
 - George's world is `site/george.html`: George's Brain-Twister Arcade, which George made.
   It has its own look (Bungee and Nunito fonts, bright arcade colours), so rule 3 below is for
-  Hattie's pages only. Its saved data uses the keys `pinhi`, `robotdesign` and the game high scores.
+  Hattie's pages only. Its saved data uses the keys `pinhi`, `robotdesign`, `lbname` and the game high scores.
+- Every scoring game on George's page has a shared leaderboard (best 10, one entry per name).
+  `site/leaderboard.php` checks names (letters, numbers and spaces, 12 characters, no rude words)
+  and keeps the scores in `scores.json` on the server (not in the repo). Nick chose typed names, so
+  keep the "use your first name or a nickname" reminder. Deleting `scores.json` clears every board.
 - When a change is committed and pushed to `main`, GitHub Actions (`.github/workflows/deploy.yml`)
   uploads `site/` to the IONOS webspace folder `/hattiesworlds`. Do not edit the workflow.
 - The site runs on Hattie's iPad as a home-screen web app, so it must work well on touch screens
