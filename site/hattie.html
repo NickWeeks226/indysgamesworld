@@ -265,6 +265,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:4px dash
 .marker{cursor:pointer}
 .marker circle{transition:transform .15s;transform-box:fill-box;transform-origin:center}
 .marker:hover circle,.marker.on circle{transform:scale(1.15);fill:var(--pink)}
+.maplabel{font-family:"Gaegu",cursive;font-size:10.5px;font-weight:700;fill:#2b2050;stroke:#fff;stroke-width:3px;paint-order:stroke;stroke-linejoin:round}
 .mapinfo{margin-top:12px;font-size:1.4rem;min-height:3em}
 .mapinfo b{font-size:1.6rem}
 
@@ -525,13 +526,107 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
   <p class="intro">This is a map of Bubble Kingdom. Tap the places to explore.</p>
   <div class="card mapwrap">
     <svg viewBox="0 0 400 280" id="mapSvg" role="img" aria-label="Map of Bubble Kingdom">
+      <!-- sea -->
       <rect width="400" height="280" fill="#cfe5ff"/>
       <g stroke="#2b2050" stroke-width="2" fill="none" opacity=".35">
-        <path d="M20 40q15-8 30 0t30 0"/><path d="M320 250q15-8 30 0t30 0"/><path d="M30 230q15-8 30 0t30 0"/>
+        <path d="M70 18q10-6 20 0t20 0"/><path d="M320 250q15-8 30 0t30 0"/><path d="M30 230q15-8 30 0t30 0"/>
+        <path d="M360 90q8-5 16 0t16 0"/><path d="M8 110q8-5 16 0t16 0"/><path d="M250 268q10-6 20 0t20 0"/><path d="M365 165q8-5 16 0t16 0"/>
       </g>
-      <path d="M70 70 C90 25 180 20 220 40 C270 20 350 45 345 105 C365 150 340 220 280 225 C230 250 160 245 120 220 C60 215 40 160 55 120 C45 100 55 80 70 70 Z" fill="#ffd2ec" stroke="#2b2050" stroke-width="4"/>
+      <g fill="#fff" fill-opacity=".8" stroke="#2b2050" stroke-width="1.2">
+        <circle cx="20" cy="140" r="4"/><circle cx="28" cy="128" r="2.5"/><circle cx="383" cy="190" r="4"/><circle cx="376" cy="205" r="2.5"/>
+        <circle cx="168" cy="268" r="3"/><circle cx="380" cy="120" r="3"/><circle cx="300" cy="14" r="3"/>
+      </g>
+      <!-- clouds -->
+      <g fill="#fff" stroke="#2b2050" stroke-width="1.8">
+        <path d="M128 22a7 7 0 0 1 10-8a9 9 0 0 1 16 1a6 6 0 0 1 4 11h-28a5 5 0 0 1-2-4z"/>
+        <path d="M318 30a6 6 0 0 1 9-7a8 8 0 0 1 14 1a5 5 0 0 1 3 9h-24a4 4 0 0 1-2-3z"/>
+      </g>
+      <!-- Bubble Whale -->
+      <g stroke="#2b2050" stroke-width="2">
+        <path d="M58 46 l12-8 v16z" fill="#4fa3ff" stroke-linejoin="round"/>
+        <ellipse cx="38" cy="47" rx="22" ry="12" fill="#4fa3ff"/>
+        <path d="M22 50q16 8 34 0" fill="#e6f2ff" stroke-width="1.5"/>
+        <circle cx="26" cy="43" r="1.8" fill="#2b2050" stroke="none"/>
+        <g fill="#fff" stroke-width="1.2"><circle cx="34" cy="28" r="3.5"/><circle cx="28" cy="20" r="2.5"/><circle cx="40" cy="18" r="2"/></g>
+      </g>
+      <!-- island: sandy beach, then pink land -->
+      <path d="M70 70 C90 25 180 20 220 40 C270 20 350 45 345 105 C365 150 340 220 280 225 C230 250 160 245 120 220 C60 215 40 160 55 120 C45 100 55 80 70 70 Z" fill="#fff1c9" stroke="#2b2050" stroke-width="4"/>
+      <path d="M70 70 C90 25 180 20 220 40 C270 20 350 45 345 105 C365 150 340 220 280 225 C230 250 160 245 120 220 C60 215 40 160 55 120 C45 100 55 80 70 70 Z" fill="#ffd2ec" transform="translate(200 135) scale(.92) translate(-200 -135)"/>
+      <!-- flowers and grass -->
+      <g stroke="#2b2050" stroke-width="1.5" fill="none" opacity=".45">
+        <path d="M78 140l3 5 3-5"/><path d="M228 118l3 5 3-5"/><path d="M300 198l3 5 3-5"/><path d="M178 202l3 5 3-5"/><path d="M70 178l3 5 3-5"/><path d="M160 60l3 5 3-5"/>
+      </g>
+      <g stroke="#2b2050" stroke-width="1"><g fill="#fff">
+        <circle cx="95" cy="160" r="3"/><circle cx="250" cy="130" r="3"/><circle cx="85" cy="125" r="3"/><circle cx="190" cy="100" r="3"/><circle cx="315" cy="190" r="3"/></g>
+        <g fill="#ff6fbf" stroke="none"><circle cx="95" cy="160" r="1.4"/><circle cx="250" cy="130" r="1.2"/><circle cx="85" cy="125" r="1.2"/><circle cx="190" cy="100" r="1.2"/><circle cx="315" cy="190" r="1.2"/></g>
+      </g>
+      <!-- paths between places -->
+      <g fill="none" stroke="#9a63ff" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round">
+        <path d="M118 114Q140 130 158 140"/><path d="M165 170Q150 180 140 186"/><path d="M146 208Q178 226 200 230"/>
+        <path d="M124 86Q168 62 206 66"/><path d="M290 108Q308 118 312 126"/>
+      </g>
+      <!-- Fizzy Mountains -->
+      <g stroke="#2b2050" stroke-width="2.5" stroke-linejoin="round">
+        <path d="M186 80L209 42L232 80Z" fill="#c4a3ff"/><path d="M214 80L240 33L266 80Z" fill="#9a63ff"/>
+        <path d="M202 54L209 42L216 54L212 51L209 55L206 51Z" fill="#fff"/><path d="M232 47L240 33L248 47L244 44L240 48L236 44Z" fill="#fff"/>
+        <g fill="#fff" stroke-width="1.2"><circle cx="248" cy="26" r="2.5"/><circle cx="254" cy="19" r="2"/><circle cx="244" cy="15" r="1.6"/><circle cx="214" cy="33" r="2"/></g>
+      </g>
+      <!-- Whispering Forest -->
+      <g stroke="#2b2050" stroke-width="2">
+        <g fill="#b07b4f"><rect x="254" y="84" width="3" height="7"/><rect x="269" y="76" width="3" height="7"/><rect x="289" y="82" width="3" height="7"/><rect x="261" y="104" width="3" height="7"/><rect x="284" y="104" width="3" height="7"/><rect x="299" y="96" width="3" height="7"/><rect x="274" y="116" width="3" height="7"/></g>
+        <g fill="#8fe3b0"><circle cx="255" cy="80" r="8"/><circle cx="270" cy="72" r="8"/><circle cx="290" cy="78" r="8"/><circle cx="262" cy="100" r="8"/><circle cx="285" cy="100" r="8"/><circle cx="300" cy="92" r="8"/><circle cx="275" cy="112" r="8"/></g>
+      </g>
+      <!-- Crystal Castle -->
+      <g stroke="#2b2050" stroke-width="2" stroke-linejoin="round">
+        <rect x="92" y="90" width="36" height="26" fill="#e3d4ff"/>
+        <rect x="84" y="80" width="12" height="36" fill="#e6f2ff"/><rect x="124" y="80" width="12" height="36" fill="#e6f2ff"/>
+        <path d="M82 80L90 64L98 80Z" fill="#ff6fbf"/><path d="M122 80L130 64L138 80Z" fill="#ff6fbf"/>
+        <path d="M90 64V56l7 3-7 3" fill="#4fa3ff"/><path d="M130 64V56l7 3-7 3" fill="#4fa3ff"/>
+        <path d="M105 116v-9a5 5 0 0 1 10 0v9" fill="#9a63ff"/>
+      </g>
+      <!-- Bubble Lake and the river to Rainbow Falls -->
+      <path d="M200 150C215 160 235 157 250 166C262 172 266 176 270 182" fill="none" stroke="#2b2050" stroke-width="9" stroke-linecap="round"/>
+      <path d="M200 150C215 160 235 157 250 166C262 172 266 176 270 182" fill="none" stroke="#4fa3ff" stroke-width="5" stroke-linecap="round"/>
       <path d="M150 140 C165 128 195 130 200 145 C205 162 180 172 160 165 C145 160 140 150 150 140 Z" fill="#4fa3ff" stroke="#2b2050" stroke-width="3"/>
-      <path d="M110 105 L150 125 L170 150 L230 170 L270 140" fill="none" stroke="#9a63ff" stroke-width="3" stroke-dasharray="6 6"/>
+      <ellipse cx="166" cy="141" rx="9" ry="3" fill="#fff" opacity=".7"/>
+      <g fill="#8fe3b0" stroke="#2b2050" stroke-width="1.2"><circle cx="186" cy="160" r="3.5"/><circle cx="155" cy="154" r="3"/></g>
+      <!-- Giggle Bridge -->
+      <g transform="rotate(25 235 160)" stroke="#2b2050" stroke-width="1.8">
+        <rect x="228" y="152" width="14" height="16" rx="2" fill="#f6c58f"/>
+        <path d="M228 157h14M228 162h14" fill="none"/>
+      </g>
+      <!-- Rainbow Falls -->
+      <g fill="none" stroke-width="3.5">
+        <path d="M246 188A25 25 0 0 1 296 188" stroke="#ff6fbf"/><path d="M250 188A21 21 0 0 1 292 188" stroke="#ffd23f"/>
+        <path d="M254 188A17 17 0 0 1 288 188" stroke="#8fe3b0"/><path d="M258 188A13 13 0 0 1 284 188" stroke="#9a63ff"/>
+      </g>
+      <path d="M263 182h16l3 34h-22Z" fill="#9fd0ff" stroke="#2b2050" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M267 186v26M272 186v28M276 186v26" stroke="#fff" stroke-width="1.5"/>
+      <!-- Bounce Village -->
+      <g stroke="#2b2050" stroke-width="2">
+        <circle cx="106" cy="188" r="9" fill="#e6f2ff"/><circle cx="152" cy="186" r="9" fill="#ffd2ec"/><circle cx="116" cy="212" r="9" fill="#e3d4ff"/>
+        <circle cx="146" cy="210" r="9" fill="#e6f2ff"/><circle cx="96" cy="205" r="7" fill="#ffd2ec"/>
+        <g fill="#9a63ff" stroke-width="1.2"><rect x="104" y="191" width="4" height="6"/><rect x="150" y="189" width="4" height="6"/><rect x="114" y="215" width="4" height="6"/><rect x="144" y="213" width="4" height="6"/></g>
+      </g>
+      <!-- Candy Meadow -->
+      <g stroke="#2b2050" stroke-width="1.8">
+        <path d="M302 132v14M328 134v14M306 158v12M331 156v12" fill="none"/>
+        <circle cx="302" cy="128" r="6" fill="#ff6fbf"/><circle cx="328" cy="130" r="6" fill="#4fa3ff"/><circle cx="306" cy="154" r="5" fill="#9a63ff"/><circle cx="331" cy="152" r="5" fill="#ffd23f"/>
+        <path d="M299 128a3 3 0 0 1 5 0M325 130a3 3 0 0 1 5 0" fill="none" stroke="#fff" stroke-width="1.5"/>
+      </g>
+      <!-- Sunny Harbour -->
+      <g stroke="#2b2050" stroke-width="2" stroke-linejoin="round">
+        <rect x="198" y="236" width="8" height="22" fill="#f6c58f"/>
+        <path d="M214 258h26l-5 8h-16Z" fill="#ff6fbf"/><path d="M227 258v-16" fill="none"/>
+        <circle cx="232" cy="248" r="6" fill="#fff" fill-opacity=".9" stroke-width="1.5"/>
+      </g>
+      <!-- compass -->
+      <g transform="translate(372 250)" stroke="#2b2050" stroke-width="1.5">
+        <circle r="15" fill="#fff"/>
+        <path d="M0-12L3-3 12 0 3 3 0 12-3 3-12 0-3-3Z" fill="#c4a3ff" stroke-linejoin="round"/>
+        <path d="M0-12L3-3H-3Z" fill="#ff6fbf"/>
+        <text y="-17" text-anchor="middle" font-family="Gaegu, cursive" font-size="11" font-weight="700" fill="#2b2050" stroke="none">N</text>
+      </g>
       <g id="markers"></g>
       <text x="20" y="268" font-family="Gaegu, cursive" font-size="18" font-weight="700" fill="#2b2050">Bubble Kingdom</text>
     </svg>
@@ -1787,14 +1882,23 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
       clearTimeout(cT);cArm=false;cBtn.textContent="🗑️ Clear";pushUndo();blank();marked=false;fb.hidden=true;
     });
     /* ideas */
-    var WHO=["a dragon","a unicorn","a cat","a robot","a mermaid","a penguin","a fairy","an alien","a snail","a bunny","a dinosaur","an owl","a frog","a panda","a jellyfish","a hedgehog"];
-    var DO=["having a picnic","riding a bike","flying a kite","baking a cake","dancing at a disco","building a sandcastle","reading a book","wearing a party hat","blowing bubbles","eating ice cream","playing football","going to sleep"];
-    var WHERE=["on the moon","under the sea","in a candy forest","on top of a rainbow","in a bubble castle","in a mushroom village","in the snow","in outer space","at the seaside","inside a giant teacup"];
+    var WHO=["a dragon","a unicorn","a cat","a robot","a mermaid","a penguin","a fairy","an alien","a snail","a bunny","a dinosaur","an owl","a frog","a panda","a jellyfish","a hedgehog",
+      "a puppy","a fox","a koala","a giraffe","an octopus","a ladybird","a butterfly","a tortoise","a sloth","a llama","a flamingo","a whale","a bee","a monkey","a lion","a teddy bear",
+      "a snowman","a princess","a pirate","a kitten in wellies","a gingerbread man","a cupcake with a face","a friendly monster","a talking tree","a baby dragon","a superhero hamster"];
+    var DO=["having a picnic","riding a bike","flying a kite","baking a cake","dancing at a disco","building a sandcastle","reading a book","wearing a party hat","blowing bubbles","eating ice cream","playing football","going to sleep",
+      "painting a picture","jumping on a trampoline","having a bath","going down a slide","playing the drums","climbing a tree","making a snowman","riding a skateboard","having a tea party",
+      "flying with balloons","juggling","planting flowers","driving a tiny car","wearing wellies in a puddle","opening a present","doing a cartwheel","singing on a stage","fishing"];
+    var WHERE=["on the moon","under the sea","in a candy forest","on top of a rainbow","in a bubble castle","in a mushroom village","in the snow","in outer space","at the seaside","inside a giant teacup",
+      "in a jungle","on a pirate ship","at the funfair","in a cloud city","in a treehouse","at a farm","in the desert","in a library","on a mountain top","in a garden full of giant flowers",
+      "inside a snow globe","on a train","in a hot air balloon","at a birthday party","in a rainy town"];
     function any(a){return a[Math.floor(Math.random()*a.length)];}
+    // pick from a list without repeats until every item has had a turn
+    var bags=new Map();
+    function pickNew(list){var b=bags.get(list);if(!b||!b.length){b=list.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=b[i];b[i]=b[j];b[j]=t;}bags.set(list,b);}return b.pop();}
     var pt=document.getElementById("promptText");
     document.querySelectorAll("[data-lvl]").forEach(function(b){b.addEventListener("click",function(){
-      var l=+b.dataset.lvl,w=any(WHO);
-      curPrompt=l===1?w:l===2?w+" "+any(DO):w+" "+any(DO)+" "+any(WHERE);
+      var l=+b.dataset.lvl,w=pickNew(WHO);
+      curPrompt=l===1?w:l===2?w+" "+pickNew(DO):w+" "+pickNew(DO)+" "+pickNew(WHERE);
       pt.textContent="Draw "+curPrompt+"!";pt.classList.remove("pop");void pt.offsetWidth;pt.classList.add("pop");
     });});
     /* feedback */
@@ -1811,9 +1915,56 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
     }
     var PRAISE=["You were brave and had a go. That's what real artists do!","Your imagination is amazing!","Look at all those lovely colours!","You put so much care into this.",
       "Every drawing makes you a better artist.","What a creative idea!","You really made it your own!","Your lines are getting more confident!"];
-    function fallbackFb(){
-      var a=curPrompt?"You drew "+curPrompt+". What a brilliant thing to draw!":any(PRAISE),b=any(PRAISE);while(b===a)b=any(PRAISE);
-      var tip=any(TIPS);showFb(a,b,"Next time: "+tip.charAt(0).toLowerCase()+tip.slice(1));
+    /* look at the picture itself: which colours, how full, sky, ground, size */
+    function hueName(r,g,b){
+      var mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/510,s=mx===mn?0:(mx-mn)/(255-Math.abs(mx+mn-255));
+      if(l<.28)return"black";if(s<.18)return l>.85?null:"grey"; // Hattie's black is a dark ink purple
+      var h;if(mx===r)h=((g-b)/(mx-mn)+6)%6;else if(mx===g)h=(b-r)/(mx-mn)+2;else h=(r-g)/(mx-mn)+4;h*=60;
+      if(h<15||h>=345)return l>.75?null:"red"; // pale red is just the soft edge of a red line
+      if(h<40)return l<.45?"brown":"orange";if(h<70)return"yellow";if(h<165)return"green";
+      if(h<255)return"blue";if(h<290)return"purple";return"pink";
+    }
+    function lookAtPicture(){
+      // check every 5th pixel of the full picture (shrinking it would blur colours together)
+      var st=5,sw=W/st,sh=H/st,full=ctx.getImageData(0,0,W,H).data;
+      var ink=0,top=0,bot=0,left=0,right=0,cols={},minX=sw,maxX=-1,minY=sh,maxY=-1,dark=0,blueTop=0;
+      for(var y=0;y<sh;y++)for(var xx=0;xx<sw;xx++){var j=(y*st*W+xx*st)*4,n=hueName(full[j],full[j+1],full[j+2]);if(!n)continue;
+        ink++;cols[n]=(cols[n]||0)+1;if(n==="black"||n==="brown"||n==="purple")dark++;
+        if(y<sh*.25){top++;if(n==="blue")blueTop++;}if(y>=sh*.75)bot++;if(xx<sw/2)left++;else right++;
+        if(xx<minX)minX=xx;if(xx>maxX)maxX=xx;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+      var band=sw*sh*.25,list=Object.keys(cols).filter(function(k){return cols[k]>=Math.max(6,ink*.005);}).sort(function(a,b){return cols[b]-cols[a];});
+      return {fill:ink/(sw*sh),colours:list,top:top/band,bottom:bot/band,blueSky:blueTop>band*.15,
+        size:ink?((maxX-minX+1)*(maxY-minY+1))/(sw*sh):0,left:left/(sw*sh/2),right:right/(sw*sh/2),dark:dark>=Math.max(6,ink*.01)};
+    }
+    function joinList(a){return a.length<2?a.join(""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];}
+    var lastWish="";
+    function pictureFb(){
+      var p=lookAtPicture(),stars=[],wishes=[],c=p.colours;
+      if(curPrompt)stars.push(any(["You drew "+curPrompt+" — what a brilliant idea!","I can tell you had fun drawing "+curPrompt+"!"]));
+      if(c.length>=4)stars.push(any(["You used "+c.length+" colours: "+joinList(c.slice(0,5))+". So bright and cheerful!","Wow, a real rainbow of colours! I spotted "+joinList(c.slice(0,4))+"."]));
+      else if(c.length>=2)stars.push(any(["I love how you put "+c[0]+" and "+c[1]+" together.","The "+c[0]+" and "+c[1]+" look lovely side by side."]));
+      else if(c.length===1)stars.push("Drawing it all in "+c[0]+" makes it look really bold and strong!");
+      if(p.fill>.35)stars.push(any(["You filled loads of the page. It's packed with ideas!","There's so much going on. I keep finding new things to look at!"]));
+      if(p.blueSky)stars.push("The blue at the top looks just like a sky. Great idea!");
+      else if(p.bottom>.25)stars.push("Adding something along the bottom makes your picture feel grounded. Nice!");
+      if(p.size>.5)stars.push("You drew it nice and big, so it really stands out!");
+      if(p.dark&&c.length>1)stars.push("Your dark lines make everything pop out clearly.");
+      stars.push(any(PRAISE));
+      if(p.size<.2)wishes.push("try drawing it really big, so it fills the page from edge to edge.");
+      if(p.top<.04)wishes.push("add a sky at the top, maybe with a sun, clouds, stars or birds.");
+      if(p.bottom<.04)wishes.push("add some ground at the bottom, like grass, sand, snow or the sea.");
+      if(c.length<=2)wishes.push("try adding more colours. What colour could the background be?");
+      if(!p.dark)wishes.push("use a dark colour to draw outlines or little shadows.");
+      if(Math.min(p.left,p.right)<p.fill*.25)wishes.push("add something on the "+(p.left<p.right?"left":"right")+" side, so both sides are busy.");
+      if(p.fill>.3&&c.length>=3)wishes.push("add tiny details like spots, stripes, sparkles or patterns.");
+      wishes.push("give your picture a face or a big expression, like a huge smile or surprised eyes.","add something small in the distance to make your picture feel really big.");
+      wishes=wishes.filter(function(w){return w!==lastWish;});var w=wishes[0];lastWish=w;
+      var a=stars[0],b=stars.slice(1).filter(function(s){return s!==a;})[0]||any(PRAISE);
+      showFb(a,b,"Next time: "+w);
+    }
+    function fallbackFb(note){
+      try{pictureFb();}catch(e){var a=any(PRAISE),b=any(PRAISE);while(b===a)b=any(PRAISE);var tip=any(TIPS);showFb(a,b,"Next time: "+tip.charAt(0).toLowerCase()+tip.slice(1));}
+      if(note){var n=document.createElement("div");n.className="fb-note";n.textContent=note;fb.appendChild(n);}
     }
     function str(v){return typeof v==="string"&&v.trim().length>2?v.trim().slice(0,160):null;}
     fbBtn.addEventListener("click",async function(){
@@ -1888,12 +2039,17 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
     [175,150,"💧","Bubble Lake","Every bubble in the kingdom starts here."],
     [270,175,"🌈","Rainbow Falls","The colourful waterfall at the edge of the land."],
     [130,195,"🏘️","Bounce Village","Bubble houses where everyone bounces to say hello."],
-    [225,60,"⛰️","Fizzy Mountains","Mountains that fizz like lemonade when it rains."]];
+    [225,60,"⛰️","Fizzy Mountains","Mountains that fizz like lemonade when it rains."],
+    [235,160,"🌉","Giggle Bridge","Walk across it and it tickles your toes!",-18],
+    [315,140,"🍭","Candy Meadow","Lollipop flowers grow here. You can pick one every day!"],
+    [205,230,"⛵","Sunny Harbour","Boats with bubble sails float off to sea from here.",-18],
+    [38,44,"🐋","Bubble Whale","A friendly whale who blows bubbles instead of water."]];
   var mk=document.getElementById("markers"),info=document.getElementById("mapInfo");
   spots.forEach(function(s){
     var g=el("g",{class:"marker",tabindex:"0",role:"button","aria-label":s[3]});
-    g.appendChild(el("circle",{cx:s[0],cy:s[1],r:18,fill:"#fff",stroke:"#2b2050","stroke-width":"3"}));
-    var tx=el("text",{x:s[0],y:s[1]+7,"text-anchor":"middle","font-size":"20"});tx.textContent=s[2];g.appendChild(tx);
+    g.appendChild(el("circle",{cx:s[0],cy:s[1],r:13,fill:"#fff",stroke:"#2b2050","stroke-width":"2.5"}));
+    var tx=el("text",{x:s[0],y:s[1]+5.5,"text-anchor":"middle","font-size":"15"});tx.textContent=s[2];g.appendChild(tx);
+    var lab=el("text",{x:s[0],y:s[1]+(s[5]||25),"text-anchor":"middle",class:"maplabel"});lab.textContent=s[3];g.appendChild(lab);
     function show(){mk.querySelectorAll(".marker").forEach(function(m){m.classList.remove("on");});g.classList.add("on");
       info.innerHTML="<b>"+s[2]+" "+s[3]+"</b><br>"+s[4];}
     g.addEventListener("click",show);g.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();show();}});
