@@ -76,6 +76,7 @@ label.tw input{width:1.3rem;height:1.3rem;accent-color:var(--pink)}
 .sb.hat::before{display:none}
 .sb .num{display:inline-block;min-width:1.9rem;text-align:center;background:#fff;color:#575e75;text-shadow:none;border-radius:999px;padding:0 .45rem}
 .sb.now{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--pink)}
+.sb.off{opacity:.35;filter:grayscale(1);cursor:not-allowed;text-decoration:line-through}
 .prog{display:flex;flex-direction:column;align-items:flex-start;min-height:58px;border:3px dashed var(--soft);border-radius:14px;padding:.7rem .7rem 1.2rem}
 .cblk{display:flex;flex-direction:column;align-items:flex-start}
 .cblk>.ctop{border-bottom-left-radius:0}
@@ -242,6 +243,7 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
     <div class="prog" id="prog" aria-label="Your program"></div>
     <div class="bar">
       <span class="score" id="cds">Level 1 of 8</span>
+      <label class="tw">Pick level <select id="cdpick" class="sel"></select></label>
       <button class="btn alt" id="cdundo">Undo</button>
       <button class="btn alt" id="cdclear">Clear</button>
       <button class="btn big" id="cdrun">Run ▶</button>
@@ -797,8 +799,19 @@ const LEVELS=[
  {d:0,max:3,m:['iiiiiiG.','i#......','i.......','i.......','S.......','........','........','........'],tip:'Ice is slippery \u2014 you slide until something stops you. 3 blocks max!'},
  {d:1,max:4,m:['S.......','#######.','......#.','.####.#.','.#.G..#.','.#....#.','.######.','........'],tip:'A spiral with only 4 blocks?! The If block turns right only when something is in the way\u2026'},
  {d:1,max:26,m:['S..c#...','....#.c.','.T..#..G','....#...','....#.T.','....#...','c...#...','........'],tip:'Purple portals teleport you to the other portal. Get all 3 coins!'},
- {d:2,max:30,swap:true,m:['.......S','.######.','.#c...#.','.#.##.#.','.#.G#.#.','.#.D..#.','.#....#.','k.......'],tip:'FINAL LEVEL: key, coin, door, jump\u2026 and this robot mixes up left and right!'}
+ {d:2,max:30,swap:true,m:['.......S','.######.','.#c...#.','.#.##.#.','.#.G#.#.','.#.D..#.','.#....#.','k.......'],tip:'TRICKY LEVEL: key, coin, door, jump\u2026 and this robot mixes up left and right!'},
+ // Crack coder levels: each has a trick. Every one was checked with a solver that tries every program.
+ {d:0,max:5,m:['######.G','#####..~','####..~~','###..~~~','##..~~~~','#..~~~~~','..~~~~~~','S~~~~~~~'],tip:'CRACK CODER LEVELS! Climb the staircase. Only 5 blocks \u2014 which steps keep repeating?'},
+ {d:1,max:2,m:['........','........','...###..','S..#G#..','...###..','........','........','........'],tip:'The star is locked in a rock fort, and there\u2019s no door! Only 2 blocks\u2026'},
+ {d:1,max:2,m:['........','........','########','TcGS.c.T','########','........','........','........'],tip:'The star is right behind you! But you only get 2 blocks. Think outside the box\u2026'},
+ {d:1,max:2,m:['........','........','........','S~T.....','........','........','....T#G.','........'],tip:'Water, a portal and a rock in the way. Just 2 blocks!'},
+ {d:0,max:3,m:['#iiiiiii','iiiiiiii','iiiiiiii','iiiiii#i','iiiiiiii','iGiiiiii','iiiiiiii','~~~~~S~~'],tip:'An ice rink! You slide until you bump into something. Only 3 blocks?!'},
+ {d:0,max:6,no:'L',m:['G.######','~..#####','~~..####','~~~..###','~~~~..##','~~~~~..#','~~~~~~..','~~~~~~~S'],tip:'Uh oh! This robot\u2019s left wheel is broken, so there\u2019s no "turn left". How can you turn left using only right turns?'},
+ {d:1,max:10,m:['S....c..','#######.','..c.....','.#######','.....c..','#######.','G.c.....','~~~~~~~~'],tip:'BOSS LEVEL: the Snake Pit! Grab all 4 coins. Bonus challenge: our computer did it in just 5 blocks. Can you?'}
 ];
+const CDKEY='codelevel';
+function cdUnlocked(){try{return Math.min(LEVELS.length-1,Math.max(0,+localStorage.getItem(CDKEY)||0))}catch(e){return 0}}
+function cdUnlock(i){if(i<=cdUnlocked())return;try{localStorage.setItem(CDKEY,i)}catch(e){}}
 const REPS=[2,3,4,5,6,7,8,10,20,50];let repi=1;
 const cdc=$('cdc'),cg=cdc.getContext('2d'),prog=[];
 let ins=0; // where the next block goes in prog (every Repeat P has a matching End E)
@@ -858,7 +871,11 @@ function drawProg(){
   });
   if(ins>=prog.length&&!cd.running)into.appendChild(slot());
 }
-function startLevel(){prog.length=0;ins=0;resetBot();drawProg();drawCode();$('cdm').textContent=lvl().tip}
+function startLevel(){prog.length=0;ins=0;resetBot();drawProg();drawCode();$('cdm').textContent=lvl().tip;
+  const no=lvl().no||'';document.querySelectorAll('.palette [data-c]').forEach(b=>b.classList.toggle('off',no.includes(b.dataset.c)));
+  const pick=$('cdpick'),top=Math.max(13,cdUnlocked(),cd.lv);pick.innerHTML=''; // levels 1-14 are always open
+  for(let i=0;i<=top;i++){const o=document.createElement('option');o.value=i;o.textContent='Level '+(i+1);pick.appendChild(o)}
+  pick.value=cd.lv}
 function flatten(){
   const steps=[];
   function run(i,out){while(i<prog.length){const t=prog[i];if(t.c==='E')return i+1;
@@ -869,8 +886,9 @@ function flatten(){
 }
 document.querySelectorAll('.palette [data-c]').forEach(b=>b.onclick=()=>{
   if(cd.running)return;const max=lvl().max;
-  if(blockCount()>=max){$('cdm').textContent=`Block limit reached (${max})! Can a Repeat loop do the same job with fewer blocks?`;return}
   const c=b.dataset.c;
+  if((lvl().no||'').includes(c)){$('cdm').textContent='That block is broken on this level! Can you do the same thing with other blocks?';return}
+  if(blockCount()>=max){$('cdm').textContent=`Block limit reached (${max})! Can a Repeat loop do the same job with fewer blocks?`;return}
   if(c==='P'){prog.splice(ins,0,{c,n:REPS[repi]},{c:'E'});ins++}
   else{prog.splice(ins,0,{c});ins++}
   drawProg();drawCode();});
@@ -910,8 +928,9 @@ $('cdrun').onclick=()=>{
     drawCode();
     if(cd.m[b.y][b.x]==='G'){
       if(cd.got>=cd.coins){cd.running=false;cd.now=-1;drawProg();
+        cdUnlock(Math.min(cd.lv+1,LEVELS.length-1));
         lbOffer('code',cd.lv+1,`You've finished ${cd.lv+1} level${cd.lv?'s':''}!`);
-        if(cd.lv<LEVELS.length-1){$('cdm').textContent=`You did it! \uD83C\uDF89 Level ${cd.lv+2} next\u2026`;setTimeout(()=>{cd.lv++;startLevel()},1700)}
+        if(cd.lv<LEVELS.length-1){$('cdm').textContent=`You did it! \uD83C\uDF89 Level ${cd.lv+2} next\u2026`;const was=cd.lv;setTimeout(()=>{if(cd.lv===was&&!cd.running){cd.lv++;startLevel()}},1700)}
         else{$('cdm').textContent='YOU BEAT EVERY LEVEL! You\u2019re a real coder! \uD83E\uDD16\uD83C\uDFC6';if(typeof playCheer==='function')playCheer()}
         return}
       else if(!warned){warned=true;$('cdm').textContent='Star\u2019s still locked \u2014 get all the coins!'}}
@@ -919,6 +938,8 @@ $('cdrun').onclick=()=>{
   };
   setTimeout(tick,250);
 };
+$('cdpick').onchange=e=>{if(cd.running){e.target.value=cd.lv;return}cd.lv=+e.target.value;startLevel()};
+cd.lv=cdUnlocked();
 startLevel();
 
 /* ===================== ROBOT OLYMPICS ===================== */
