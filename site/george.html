@@ -366,7 +366,7 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
   <!-- FISHING -->
   <section class="game" id="fish">
     <h2>Gone Fishing</h2>
-    <p class="how">Row your boat with the ◀ ▶ buttons (or tap the sky). Drag your finger in the water to move your rod and hook, then keep still. When the float shouts BITE!, tap fast to reel it in! Little fish swim near the top, and the big ones hide deep down. A longer rod reaches further and deeper. More hooks catch more fish at once.</p>
+    <p class="how">Row your boat with the ◀ ▶ buttons (or tap the sky). Drag your finger in the water to move your rod and hook, then keep still. When the float shouts BITE!, tap fast to reel it in! The lake is DEEP: hold your finger near the bottom to keep diving. Little fish swim near the top, giant ones and treasure hide in the deep dark. A longer rod reaches further and deeper. More hooks catch more fish at once.</p>
     <canvas id="fsc" width="360" height="480" style="max-width:380px;margin:0 auto;touch-action:none"></canvas>
     <div class="olctrl"><button class="btn alt" id="fsl" aria-label="Row left">◀ Row</button><button class="btn big" id="fsgo">Start fishing 🎣</button><button class="btn alt" id="fsr" aria-label="Row right">Row ▶</button></div>
     <div class="bar"><span class="score" id="fss">Bank: 0 points</span><span id="fshi" style="font-weight:800;color:var(--soft)"></span></div>
@@ -1803,38 +1803,44 @@ wkHud();
 // Side view: the boat floats on the surface and the hook hangs from the rod tip.
 // Drag in the water to swing the rod and move the hook. Deeper water has bigger fish.
 const fsc=$('fsc'),fg=fsc.getContext('2d');
-const SURF=130,BED=455;
+// The lake is much deeper than the screen: the camera follows the hook down (camY).
+const SURF=130,BED=1100,FS_BOTTOM=BED+40;
 const FISH={
-  boot:{e:'👢',pts:0,n:'an old boot',s:24,top:441,bot:444},
-  minnow:{e:'🐟',pts:1,n:'a minnow',s:24,top:155,bot:235},
-  trop:{e:'🐠',pts:3,n:'a stripy fish',s:28,top:195,bot:320},
-  puffer:{e:'🐡',pts:5,n:'a pufferfish',s:30,top:270,bot:385},
-  squid:{e:'🦑',pts:10,n:'a giant squid',s:34,top:345,bot:430},
-  gold:{e:'🐟',pts:25,n:'the GOLDEN FISH',s:32,top:385,bot:432,gold:true}};
-const ROD_COST=[10,25,50,100,200],HOOK_COST=[15,40,80,160,300];
-const fs={state:'ready',time:0,trip:0,bank:0,rod:0,hooks:0,best:0,fish:[],boat:{x:110,dir:0,tx:null},hook:{x:170,y:180,still:0},drag:false,bite:null,biteT:0,pops:[],spawn:0};
-try{const s=JSON.parse(localStorage.getItem('fishsave')||'null');if(s){fs.bank=+s.bank||0;fs.rod=Math.min(5,+s.rod||0);fs.hooks=Math.min(5,+s.hooks||0);fs.best=+s.best||0}}catch(e){}
+  boot:{e:'👢',pts:0,n:'an old boot',s:24,top:BED-12,bot:BED-9,still:true},
+  gem:{e:'💎',pts:50,n:'a TREASURE GEM',s:26,top:BED-12,bot:BED-9,still:true,gold:true},
+  minnow:{e:'🐟',pts:1,n:'a minnow',s:24,top:155,bot:270},
+  trop:{e:'🐠',pts:3,n:'a stripy fish',s:28,top:200,bot:400},
+  puffer:{e:'🐡',pts:5,n:'a pufferfish',s:30,top:330,bot:560},
+  squid:{e:'🦑',pts:10,n:'a giant squid',s:34,top:500,bot:740},
+  octo:{e:'🐙',pts:15,n:'an octopus',s:36,top:650,bot:900},
+  whale:{e:'🐋',pts:30,n:'a WHALE',s:50,top:800,bot:1000},
+  gold:{e:'🐟',pts:40,n:'the GOLDEN FISH',s:32,top:950,bot:1070,gold:true}};
+const ROD_COST=[10,25,50,100,200,350,550],HOOK_COST=[15,40,80,160,300],ROD_MAX=ROD_COST.length,HOOK_MAX=HOOK_COST.length;
+const fs={state:'ready',time:0,trip:0,bank:0,rod:0,hooks:0,best:0,fish:[],boat:{x:110,dir:0,tx:null},hook:{x:170,y:180,still:0},drag:false,ptr:null,camY:0,bite:null,biteT:0,pops:[],spawn:0};
+try{const s=JSON.parse(localStorage.getItem('fishsave')||'null');if(s){fs.bank=+s.bank||0;fs.rod=Math.min(ROD_MAX,+s.rod||0);fs.hooks=Math.min(HOOK_MAX,+s.hooks||0);fs.best=+s.best||0}}catch(e){}
 function fsSave(){try{localStorage.setItem('fishsave',JSON.stringify({bank:fs.bank,rod:fs.rod,hooks:fs.hooks,best:fs.best}))}catch(e){}}
-// a longer rod reaches further sideways AND deeper down
-const reachX=()=>70+fs.rod*22,reachY=()=>Math.min(BED-10,SURF+95+fs.rod*62),hookCount=()=>1+fs.hooks;
+// a longer rod reaches further sideways AND deeper down (level 8 reaches the lake bed)
+const reachX=()=>70+fs.rod*18,reachY=()=>Math.min(BED-12,SURF+95+fs.rod*125),hookCount=()=>1+fs.hooks;
+const depthM=y=>Math.max(0,Math.round((y-SURF)/10)); // 10 pixels = 1 metre
 function clampHook(){const h=fs.hook,b=fs.boat;
   h.x=Math.max(10,Math.min(350,Math.max(b.x-reachX(),Math.min(b.x+reachX(),h.x))));h.y=Math.max(SURF+14,Math.min(reachY(),h.y))}
 function fsHud(){
   $('fss').textContent=`Bank: ${fs.bank} points`;$('fshi').textContent=fs.best?'Best trip: '+fs.best:'';
-  const shop=(btn,lv,cost,label,now,next)=>{const el=$(btn);if(lv>=5){el.textContent=`${label}: ${now} (MAX!)`;el.disabled=true;return}
+  const shop=(btn,lv,max,cost,label,now,next)=>{const el=$(btn);if(lv>=max){el.textContent=`${label}: ${now} (MAX!)`;el.disabled=true;return}
     el.textContent=`${label}: ${now} → ${next} for ${cost[lv]} points`;el.disabled=fs.bank<cost[lv]};
-  shop('fsrod',fs.rod,ROD_COST,'🎣 Longer rod','level '+(fs.rod+1),'level '+(fs.rod+2));
-  shop('fshook',fs.hooks,HOOK_COST,'🪝 More hooks',hookCount(),hookCount()+1);
+  shop('fsrod',fs.rod,ROD_MAX,ROD_COST,'🎣 Longer rod',`level ${fs.rod+1} (${depthM(reachY())} m)`,'level '+(fs.rod+2));
+  shop('fshook',fs.hooks,HOOK_MAX,HOOK_COST,'🪝 More hooks',hookCount(),hookCount()+1);
 }
-function buy(kind){const lv=fs[kind],cost=(kind==='rod'?ROD_COST:HOOK_COST)[lv];if(lv>=5||fs.bank<cost)return;
+function buy(kind){const lv=fs[kind],cost=(kind==='rod'?ROD_COST:HOOK_COST)[lv];if(lv>=(kind==='rod'?ROD_MAX:HOOK_MAX)||fs.bank<cost)return;
   fs.bank-=cost;fs[kind]++;fsSave();fsHud();
-  $('fsm').textContent=kind==='rod'?'Your rod reaches further AND deeper now! 🎣':`Now you can catch ${hookCount()} fish at once! 🪝`}
+  $('fsm').textContent=kind==='rod'?`Your rod reaches further AND deeper now: down to ${depthM(reachY())} metres! 🎣`:`Now you can catch ${hookCount()} fish at once! 🪝`}
 $('fsrod').onclick=()=>buy('rod');$('fshook').onclick=()=>buy('hooks');
-function pickType(){const r=Math.random();return r<.06?'boot':r<.4?'minnow':r<.66?'trop':r<.84?'puffer':r<.95?'squid':'gold'}
+function pickType(){const r=Math.random();
+  return r<.05?'boot':r<.08?'gem':r<.3?'minnow':r<.48?'trop':r<.63?'puffer':r<.76?'squid':r<.87?'octo':r<.95?'whale':'gold'}
 function spawnFish(anywhere){const type=pickType(),F=FISH[type],dir=Math.random()<.5?-1:1;
-  if(type==='boot'&&fs.fish.some(f=>f.type==='boot'))return;
-  fs.fish.push({type,x:type==='boot'||anywhere?rnd(25,335):(dir>0?-25:385),y:rnd(F.top,F.bot),vx:type==='boot'?0:dir*rnd(.35,.75)*(F.gold?1.8:1),vy:0,wig:Math.random()*6,fade:anywhere?0:1})}
-function fsStart(){Object.assign(fs,{state:'play',trip:0,fish:[],bite:null,pops:[],spawn:0});for(let i=0;i<9;i++)spawnFish(true);clampHook();
+  if(F.still&&fs.fish.some(f=>f.type===type))return;
+  fs.fish.push({type,x:F.still||anywhere?rnd(25,335):(dir>0?-25:385),y:rnd(F.top,F.bot),vx:F.still?0:dir*rnd(.35,.75)*(type==='gold'?1.8:type==='whale'?.6:1),vy:0,wig:Math.random()*6,fade:anywhere?0:1})}
+function fsStart(){Object.assign(fs,{state:'play',trip:0,fish:[],bite:null,pops:[],spawn:0});for(let i=0;i<14;i++)spawnFish(true);clampHook();
   $('fsgo').textContent='Stop fishing 🛑';$('fsm').textContent='Drag in the water to move your rod and hook. Then keep still and wait for a bite!';fsHud();audio&&audio()}
 $('fsgo').onclick=()=>fs.state==='play'?fsEnd():fsStart(); // no timer: fish for as long as you like
 function fsEnd(){fs.state='over';fs.bite=null;$('fsgo').textContent='Go again 🎣';
@@ -1845,18 +1851,19 @@ function reel(){const h=fs.hook,first=fs.bite;fs.bite=null;
   // the biting fish, plus the nearest others if you have more hooks
   const near=fs.fish.filter(f=>f!==first&&Math.hypot(f.x-h.x,f.y-h.y)<70).sort((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)-Math.hypot(b.x-h.x,b.y-h.y));
   const got=[first,...near.slice(0,hookCount()-1)];let pts=0;
-  got.forEach((f,i)=>{pts+=FISH[f.type].pts;fs.pops.push({x:h.x,y:SURF-12-i*18,t:FISH[f.type].e+' +'+FISH[f.type].pts,l:70})});
+  got.forEach((f,i)=>{pts+=FISH[f.type].pts;fs.pops.push({x:h.x,y:h.y-24-i*18,t:FISH[f.type].e+' +'+FISH[f.type].pts,l:70})});
   fs.fish=fs.fish.filter(f=>!got.includes(f));fs.trip+=pts;fs.bank+=pts;fs.hook.still=0;fsSave();fsHud();
   $('fsm').textContent=(got.length>1?`${got.length} at once! `:'')+`You caught ${got.map(f=>FISH[f.type].n).join(' and ')}! +${pts}`+
-    (got.some(f=>f.type==='gold')?' ✨✨✨':got.every(f=>f.type==='boot')?' Oh well! 😄':'');
-  if(got.some(f=>f.type==='gold'))playCheer&&playCheer()}
-function moveHook(p){fs.hook.x=p.x;fs.hook.y=p.y;clampHook();fs.hook.still=0}
+    (got.some(f=>FISH[f.type].gold)?' ✨✨✨':got.every(f=>f.type==='boot')?' Oh well! 😄':'');
+  if(got.some(f=>FISH[f.type].gold||f.type==='whale'))playCheer&&playCheer()}
+// the finger is in screen space; add camY to turn it into a spot in the deep lake
+function moveHook(p){fs.hook.x=p.x;fs.hook.y=p.y+fs.camY;clampHook();fs.hook.still=0}
 fsc.addEventListener('pointerdown',e=>{e.preventDefault();const p=pos(fsc,e);
   if(fs.bite){reel();return}
   if(fs.state!=='play'){$('fsm').textContent='Press Start fishing to start your trip!';return}
-  if(p.y<SURF-20){fs.boat.tx=p.x;return} // tap the sky to row there
-  fs.drag=true;try{fsc.setPointerCapture(e.pointerId)}catch(_){}moveHook(p);$('fsm').textContent='Now keep still and wait for a bite…'});
-fsc.addEventListener('pointermove',e=>{if(fs.drag)moveHook(pos(fsc,e))});
+  if(p.y+fs.camY<SURF-20){fs.boat.tx=p.x;return} // tap the sky to row there
+  fs.drag=true;fs.ptr=p;try{fsc.setPointerCapture(e.pointerId)}catch(_){}moveHook(p);$('fsm').textContent='Drag down to go deeper. Then keep still and wait for a bite…'});
+fsc.addEventListener('pointermove',e=>{if(fs.drag){fs.ptr=pos(fsc,e);moveHook(fs.ptr)}});
 ['pointerup','pointercancel'].forEach(t=>fsc.addEventListener(t,()=>{fs.drag=false}));
 [['fsl',-1],['fsr',1]].forEach(([id,d])=>{const b=$(id);
   b.addEventListener('pointerdown',e=>{e.preventDefault();fs.boat.dir=d;fs.boat.tx=null});
@@ -1871,21 +1878,25 @@ function stepFish(){
   if(b.tx!==null){const d=b.tx-b.x;dx=Math.abs(d)<1.5?0:Math.sign(d)*1.5;if(!dx)b.tx=null}
   const nx=Math.max(30,Math.min(330,b.x+dx));if(nx!==b.x){h.x+=nx-b.x;b.x=nx;b.rowing=(b.rowing||0)+1;h.still=0;clampHook()}
   if(!fs.drag)h.still++;
+  else if(fs.ptr&&(fs.ptr.y>400||fs.ptr.y<120))moveHook(fs.ptr); // holding near the edge keeps diving (or rising)
+  const want=Math.max(0,Math.min(FS_BOTTOM-480,h.y-260));fs.camY+=(want-fs.camY)*.1;
   for(const f of fs.fish){f.fade=Math.min(1,f.fade+.03);if(f===fs.bite)continue;
     const F=FISH[f.type],dist=Math.hypot(f.x-h.x,f.y-h.y);
-    if(fs.state==='play'&&!fs.bite&&f.type!=='boot'&&h.still>30&&dist<65){ // swim to the hook
+    if(fs.state==='play'&&!fs.bite&&!F.still&&h.still>30&&dist<65){ // swim to the hook
       const a=Math.atan2(h.y-f.y,h.x-f.x),sp=Math.max(.4,Math.abs(f.vx));f.x+=Math.cos(a)*sp;f.y+=Math.sin(a)*sp;f.face=Math.cos(a);
       if(dist<9&&h.still>55){fs.bite=f;fs.biteT=90;$('fsm').textContent='BITE! Tap to reel it in!'}}
     else{f.x+=f.vx;f.wig+=.05;f.y=Math.max(F.top,Math.min(F.bot,f.y+Math.sin(f.wig)*.3));f.face=f.vx}}
-  if(fs.state==='play'&&!fs.bite&&h.still>90){const boot=fs.fish.find(f=>f.type==='boot'&&Math.hypot(f.x-h.x,f.y-h.y)<24);if(boot){fs.bite=boot;fs.biteT=90;$('fsm').textContent='BITE! Tap to reel it in!'}}
+  if(fs.state==='play'&&!fs.bite&&h.still>90){const snag=fs.fish.find(f=>FISH[f.type].still&&Math.hypot(f.x-h.x,f.y-h.y)<24);if(snag){fs.bite=snag;fs.biteT=90;$('fsm').textContent=snag.type==='gem'?'You hooked something SPARKLY! Tap to reel it in!':'BITE! Tap to reel it in!'}}
   if(fs.bite){const f=fs.bite;f.x=h.x+Math.sin(frame*.6)*2;f.y=h.y+8;
     if(--fs.biteT<=0){fs.bite=null;f.vx=(Math.random()<.5?-1:1)*1.4;h.still=0;$('fsm').textContent='It got away! Tap faster when you see BITE!'}}
   fs.fish=fs.fish.filter(f=>f.x>-40&&f.x<400);
   if(fs.state!=='play')return;
-  if(fs.fish.length<10&&--fs.spawn<=0){spawnFish(false);fs.spawn=45}
+  if(fs.fish.length<15&&--fs.spawn<=0){spawnFish(false);fs.spawn=40}
 }
 function drawFish(){
   const g=fg,b=fs.boat,h=fs.hook,bob=Math.sin(frame*.05)*2;
+  g.fillStyle='#06183d';g.fillRect(0,0,360,480);
+  g.save();g.translate(0,-Math.round(fs.camY)); // everything below is in lake coordinates
   // sky, sun, hills on the far shore
   const sky=g.createLinearGradient(0,0,0,SURF);sky.addColorStop(0,'#8fd3ff');sky.addColorStop(1,'#e2f4ff');g.fillStyle=sky;g.fillRect(0,0,360,SURF);
   g.fillStyle='#ffd23f';g.beginPath();g.arc(300,58,20,0,7);g.fill();
@@ -1893,16 +1904,23 @@ function drawFish(){
   g.fillStyle='#5cbf6a';g.beginPath();g.moveTo(0,SURF);g.quadraticCurveTo(70,SURF-45,150,SURF);g.quadraticCurveTo(230,SURF-35,360,SURF-8);g.lineTo(360,SURF);g.fill();
   g.fillStyle='#3e9b52';[[40,SURF-14],[95,SURF-22],[250,SURF-16]].forEach(([x,y])=>{g.beginPath();g.arc(x,y,9,0,7);g.fill();g.fillRect(x-1.5,y,3,10)});
   // water gets darker as it gets deeper
-  const wa=g.createLinearGradient(0,SURF,0,BED);wa.addColorStop(0,'#5cb8ff');wa.addColorStop(.45,'#2a7bd1');wa.addColorStop(1,'#0e3570');g.fillStyle=wa;g.fillRect(0,SURF,360,480-SURF);
-  g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<4;i++){const x=40+i*95+Math.sin(frame*.01+i)*10;g.beginPath();g.moveTo(x,SURF);g.lineTo(x+30,SURF);g.lineTo(x-10,BED);g.lineTo(x-40,BED);g.fill()}
+  const wa=g.createLinearGradient(0,SURF,0,BED);wa.addColorStop(0,'#5cb8ff');wa.addColorStop(.3,'#2a7bd1');wa.addColorStop(.65,'#123f86');wa.addColorStop(1,'#06183d');
+  g.fillStyle=wa;g.fillRect(0,SURF,360,FS_BOTTOM-SURF);
+  g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<4;i++){const x=40+i*95+Math.sin(frame*.01+i)*10;g.beginPath();g.moveTo(x,SURF);g.lineTo(x+30,SURF);g.lineTo(x-20,SURF+420);g.lineTo(x-50,SURF+420);g.fill()}
   g.strokeStyle='rgba(255,255,255,.6)';g.lineWidth=2;g.beginPath();for(let x=0;x<=360;x+=6)g.lineTo(x,SURF+Math.sin(x*.08+frame*.06)*1.5);g.stroke();
-  g.fillStyle='rgba(255,255,255,.4)';for(let i=0;i<8;i++){const x=(i*47+20)%360,y=BED-((frame*.6+i*60)%(BED-SURF));g.beginPath();g.arc(x+Math.sin(y*.05)*3,y,2+i%3,0,7);g.fill()}
-  // lake bed with weeds and pebbles
-  g.fillStyle='#d9b77a';g.beginPath();g.moveTo(0,BED);for(let x=0;x<=360;x+=30)g.lineTo(x,BED+Math.sin(x*.05)*4);g.lineTo(360,480);g.lineTo(0,480);g.fill();
-  g.strokeStyle='#2fa05a';g.lineWidth=4;g.lineCap='round';[20,70,150,215,300,340].forEach((x,i)=>{g.beginPath();g.moveTo(x,BED+4);for(let k=1;k<=4;k++)g.lineTo(x+Math.sin(frame*.03+k+i)*5,BED+4-k*14-(i%2)*6);g.stroke()});
-  g.fillStyle='#9a8a74';[[110,BED+8],[255,BED+10],[185,BED+12]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,9,5,0,0,7);g.fill()});
+  g.fillStyle='rgba(255,255,255,.4)';for(let i=0;i<18;i++){const x=(i*47+20)%360,y=BED-((frame*.6+i*55)%(BED-SURF));g.beginPath();g.arc(x+Math.sin(y*.05)*3,y,2+i%3,0,7);g.fill()}
+  // glowing specks in the deep dark water
+  for(let i=0;i<30;i++){const x=(i*83)%360,y=720+(i*37)%360;g.fillStyle=`rgba(${i%2?'124,255,214':'199,125,255'},${.25+.25*Math.sin(frame*.05+i)})`;g.beginPath();g.arc(x+Math.sin(frame*.01+i)*6,y,2,0,7);g.fill()}
+  // depth markers down the right side
+  g.font='bold 11px Nunito,sans-serif';g.textAlign='right';g.textBaseline='middle';
+  for(let y=SURF+100;y<BED;y+=100){g.fillStyle='rgba(255,255,255,.35)';g.fillRect(346,y,14,2);g.fillText(depthM(y)+' m',342,y)}
+  // lake bed with weeds, rocks and a sunken anchor
+  g.fillStyle='#b99a63';g.beginPath();g.moveTo(0,BED);for(let x=0;x<=360;x+=30)g.lineTo(x,BED+Math.sin(x*.05)*4);g.lineTo(360,FS_BOTTOM);g.lineTo(0,FS_BOTTOM);g.fill();
+  g.strokeStyle='#1f7a45';g.lineWidth=4;g.lineCap='round';[20,70,150,215,300,340].forEach((x,i)=>{g.beginPath();g.moveTo(x,BED+4);for(let k=1;k<=5;k++)g.lineTo(x+Math.sin(frame*.03+k+i)*5,BED+4-k*16-(i%2)*6);g.stroke()});
+  g.fillStyle='#7d7064';[[110,BED+8],[255,BED+10],[185,BED+12]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,12,6,0,0,7);g.fill()});
+  g.strokeStyle='#5c6380';g.lineWidth=4;g.beginPath();g.moveTo(275,BED-2);g.lineTo(275,BED-36);g.moveTo(262,BED-30);g.lineTo(288,BED-30);g.arc(275,BED-12,13,Math.PI*.15,Math.PI*.85);g.stroke();
   g.fillStyle='rgba(255,255,255,.55)';g.font='bold 11px Nunito,sans-serif';g.textAlign='left';g.textBaseline='middle';
-  g.fillText('Shallow: little fish',8,SURF+14);g.fillText('Deep: BIG fish!',8,BED-12);
+  g.fillText('Shallow: little fish',8,SURF+14);g.fillText('Deeper: BIGGER fish!',8,SURF+420);g.fillText('The deep dark bottom: GIANT fish and treasure!',8,BED-60);
   // how far the rod reaches
   if(fs.state==='play'){g.strokeStyle='rgba(255,255,255,.45)';g.setLineDash([5,6]);g.lineWidth=1.5;
     g.strokeRect(Math.max(4,b.x-reachX()),SURF+8,Math.min(356,b.x+reachX())-Math.max(4,b.x-reachX()),reachY()-SURF);g.setLineDash([])}
@@ -1911,7 +1929,7 @@ function drawFish(){
   for(const f of fs.fish){const F=FISH[f.type];g.globalAlpha=f.fade;
     g.fillStyle=F.gold?'rgba(255,230,120,.75)':'rgba(230,245,255,.5)';g.beginPath();g.arc(f.x,f.y,F.s*.6,0,7);g.fill();
     g.save();g.translate(f.x,f.y);if(f.type!=='boot'&&f.face>0)g.scale(-1,1);g.font=F.s+'px sans-serif';g.fillStyle='#14213d';
-    if(F.gold){g.shadowColor='#ffd23f';g.shadowBlur=14}g.fillText(F.e,0,0);g.restore();
+    if(F.gold){g.shadowColor='#ffd23f';g.shadowBlur=14}if(f.type==='gold')g.filter='sepia(1) saturate(4) brightness(1.15)';g.fillText(F.e,0,0);g.restore();
     if(F.gold&&frame%24<12){g.font='12px sans-serif';g.fillText('✨',f.x+13,f.y-13)}}
   g.globalAlpha=1;
   // boat (bobbing on the surface), you, the rod, the float and the hook
@@ -1933,10 +1951,10 @@ function drawFish(){
   g.strokeStyle='#6b3e18';g.lineWidth=4;g.lineCap='round';g.beginPath();g.moveTo(hx,hy);g.quadraticCurveTo((hx+tx)/2,(hy+ty)/2-bend,tx,ty);g.stroke();
   g.fillStyle='#14213d';g.beginPath();g.arc(hx,hy,3,0,7);g.fill();
   if(fs.bite){g.font='bold 22px Bungee,Impact,sans-serif';g.fillStyle='#ffd23f';g.strokeStyle='#14213d';g.lineWidth=4;const btx=Math.max(50,Math.min(310,h.x+(h.x<180?48:-48)));g.strokeText('BITE!',btx,h.y);g.fillText('BITE!',btx,h.y)}
-  for(const p of fs.pops){g.globalAlpha=Math.min(1,p.l/20);g.font='bold 16px Nunito,sans-serif';g.fillStyle='#fff';g.strokeStyle='#14213d';g.lineWidth=3;g.strokeText(p.t,p.x,p.y);g.fillText(p.t,p.x,p.y)}
-  g.globalAlpha=1;
-  g.fillStyle='rgba(20,33,61,.75)';g.fillRect(0,0,360,30);g.fillStyle='#fff';g.font='bold 15px Nunito,sans-serif';g.textAlign='left';
-  g.fillText(`🐟 Trip: ${fs.trip}`,10,15);g.textAlign='right';g.fillText(`🎣 Lv${fs.rod+1}  🪝 ${hookCount()}`,350,15);
+  for(const p of fs.pops){g.globalAlpha=Math.min(1,p.l/20);g.font='bold 16px Nunito,sans-serif';g.fillStyle='#fff';g.strokeStyle='#14213d';g.lineWidth=3;g.textAlign='center';g.strokeText(p.t,p.x,p.y);g.fillText(p.t,p.x,p.y)}
+  g.globalAlpha=1;g.restore(); // back to screen space for the scoreboard
+  g.fillStyle='rgba(20,33,61,.75)';g.fillRect(0,0,360,30);g.fillStyle='#fff';g.font='bold 15px Nunito,sans-serif';g.textAlign='left';g.textBaseline='middle';
+  g.fillText(`🐟 Trip: ${fs.trip}`,10,15);g.textAlign='center';g.fillText(`⬇ ${depthM(h.y)} m`,180,15);g.textAlign='right';g.fillText(`🎣 Lv${fs.rod+1}  🪝 ${hookCount()}`,350,15);
   if(fs.state!=='play'){g.textAlign='center';g.fillStyle='rgba(20,33,61,.6)';g.fillRect(0,230,360,64);g.fillStyle=fs.state==='over'?'#ff4f8b':'#ffd23f';g.font='bold 24px Bungee,Impact,sans-serif';
     g.fillText(fs.state==='over'?'TRIP OVER!':'GONE FISHING',180,254);g.fillStyle='#fff';g.font='bold 13px Nunito,sans-serif';g.fillText('Press the Start button below',180,278)}
 }
