@@ -11,7 +11,7 @@ Hattie's Worlds is her business idea: designing imaginary worlds and bringing th
 - Hattie's world is one file: `site/hattie.html` (HTML, CSS and JavaScript together).
 - George's world is `site/george.html`: George's Brain-Twister Arcade, which George made.
   It has its own look (Bungee and Nunito fonts, bright arcade colours), so rule 3 below is for
-  Hattie's pages only. Its saved data uses the keys `pinhi`, `robotdesign`, `lbname`, `codelevel` and the game high scores.
+  Hattie's pages only. Its saved data uses the keys `pinhi`, `robotdesign`, `lbname`, `codelevel`, `fishsave` (fishing bank points and rod/hook upgrades) and the game high scores.
 - Robo Coder levels 14+ are "crack coder" puzzles with a trick (jump over rocks, wrap through
   portals, ice bounces, a broken turn-left block via `no:'L'`). The kids love these. Before adding
   a level, check it can be solved within its block limit using only the repeat numbers the game
