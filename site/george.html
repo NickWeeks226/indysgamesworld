@@ -1804,23 +1804,28 @@ wkHud();
 // Drag in the water to swing the rod and move the hook. Deeper water has bigger fish.
 const fsc=$('fsc'),fg=fsc.getContext('2d');
 // The lake is much deeper than the screen: the camera follows the hook down (camY).
-const SURF=130,BED=1100,FS_BOTTOM=BED+40;
+const SURF=130,BED=3000,FS_BOTTOM=BED+40;
+// w = how often each one turns up
 const FISH={
-  boot:{e:'👢',pts:0,n:'an old boot',s:24,top:BED-12,bot:BED-9,still:true},
-  gem:{e:'💎',pts:50,n:'a TREASURE GEM',s:26,top:BED-12,bot:BED-9,still:true,gold:true},
-  minnow:{e:'🐟',pts:1,n:'a minnow',s:24,top:155,bot:270},
-  trop:{e:'🐠',pts:3,n:'a stripy fish',s:28,top:200,bot:400},
-  puffer:{e:'🐡',pts:5,n:'a pufferfish',s:30,top:330,bot:560},
-  squid:{e:'🦑',pts:10,n:'a giant squid',s:34,top:500,bot:740},
-  octo:{e:'🐙',pts:15,n:'an octopus',s:36,top:650,bot:900},
-  whale:{e:'🐋',pts:30,n:'a WHALE',s:50,top:800,bot:1000},
-  gold:{e:'🐟',pts:40,n:'the GOLDEN FISH',s:32,top:950,bot:1070,gold:true}};
-const ROD_COST=[10,25,50,100,200,350,550],HOOK_COST=[15,40,80,160,300],ROD_MAX=ROD_COST.length,HOOK_MAX=HOOK_COST.length;
+  boot:{e:'👢',pts:0,n:'an old boot',s:24,top:BED-12,bot:BED-9,still:true,w:3},
+  gem:{e:'💎',pts:100,n:'a TREASURE GEM',s:26,top:BED-12,bot:BED-9,still:true,gold:true,w:2},
+  minnow:{e:'🐟',pts:1,n:'a minnow',s:24,top:155,bot:300,w:12},
+  trop:{e:'🐠',pts:3,n:'a stripy fish',s:28,top:200,bot:450,w:12},
+  puffer:{e:'🐡',pts:5,n:'a pufferfish',s:30,top:350,bot:700,w:10},
+  dolphin:{e:'🐬',pts:8,n:'a dolphin',s:40,top:300,bot:700,w:6},
+  squid:{e:'🦑',pts:10,n:'a giant squid',s:34,top:600,bot:1050,w:9},
+  turtle:{e:'🐢',pts:12,n:'a sea turtle',s:36,top:800,bot:1250,w:8},
+  octo:{e:'🐙',pts:15,n:'an octopus',s:36,top:1050,bot:1550,w:8},
+  jelly:{pts:20,n:'a glowing jellyfish',s:34,top:1350,bot:2000,jelly:true,w:10},
+  whale:{e:'🐋',pts:30,n:'a WHALE',s:54,top:1800,bot:2450,w:6},
+  gold:{e:'🐟',pts:40,n:'the GOLDEN FISH',s:32,top:2400,bot:2950,gold:true,w:3},
+  dragon:{e:'🐉',pts:75,n:'a friendly SEA DRAGON',s:58,top:2450,bot:2940,gold:true,w:2}};
+const ROD_COST=[10,25,50,100,200,350,550,800,1100,1500,2000],HOOK_COST=[15,40,80,160,300],ROD_MAX=ROD_COST.length,HOOK_MAX=HOOK_COST.length;
 const fs={state:'ready',time:0,trip:0,bank:0,rod:0,hooks:0,best:0,fish:[],boat:{x:110,dir:0,tx:null},hook:{x:170,y:180,still:0},drag:false,ptr:null,camY:0,bite:null,biteT:0,pops:[],spawn:0};
 try{const s=JSON.parse(localStorage.getItem('fishsave')||'null');if(s){fs.bank=+s.bank||0;fs.rod=Math.min(ROD_MAX,+s.rod||0);fs.hooks=Math.min(HOOK_MAX,+s.hooks||0);fs.best=+s.best||0}}catch(e){}
 function fsSave(){try{localStorage.setItem('fishsave',JSON.stringify({bank:fs.bank,rod:fs.rod,hooks:fs.hooks,best:fs.best}))}catch(e){}}
-// a longer rod reaches further sideways AND deeper down (level 8 reaches the lake bed)
-const reachX=()=>70+fs.rod*18,reachY=()=>Math.min(BED-12,SURF+95+fs.rod*125),hookCount=()=>1+fs.hooks;
+// a longer rod reaches further sideways AND deeper down (the top level reaches the lake bed)
+const reachX=()=>70+Math.min(fs.rod,7)*18,reachY=()=>Math.min(BED-12,SURF+95+fs.rod*Math.ceil((BED-12-SURF-95)/ROD_MAX)),hookCount=()=>1+fs.hooks;
 const depthM=y=>Math.max(0,Math.round((y-SURF)/10)); // 10 pixels = 1 metre
 function clampHook(){const h=fs.hook,b=fs.boat;
   h.x=Math.max(10,Math.min(350,Math.max(b.x-reachX(),Math.min(b.x+reachX(),h.x))));h.y=Math.max(SURF+14,Math.min(reachY(),h.y))}
@@ -1835,12 +1840,12 @@ function buy(kind){const lv=fs[kind],cost=(kind==='rod'?ROD_COST:HOOK_COST)[lv];
   fs.bank-=cost;fs[kind]++;fsSave();fsHud();
   $('fsm').textContent=kind==='rod'?`Your rod reaches further AND deeper now: down to ${depthM(reachY())} metres! 🎣`:`Now you can catch ${hookCount()} fish at once! 🪝`}
 $('fsrod').onclick=()=>buy('rod');$('fshook').onclick=()=>buy('hooks');
-function pickType(){const r=Math.random();
-  return r<.05?'boot':r<.08?'gem':r<.3?'minnow':r<.48?'trop':r<.63?'puffer':r<.76?'squid':r<.87?'octo':r<.95?'whale':'gold'}
+const FISH_W=Object.keys(FISH).reduce((s,k)=>s+FISH[k].w,0);
+function pickType(){let r=Math.random()*FISH_W;for(const k in FISH){r-=FISH[k].w;if(r<0)return k}return 'minnow'}
 function spawnFish(anywhere){const type=pickType(),F=FISH[type],dir=Math.random()<.5?-1:1;
   if(F.still&&fs.fish.some(f=>f.type===type))return;
-  fs.fish.push({type,x:F.still||anywhere?rnd(25,335):(dir>0?-25:385),y:rnd(F.top,F.bot),vx:F.still?0:dir*rnd(.35,.75)*(type==='gold'?1.8:type==='whale'?.6:1),vy:0,wig:Math.random()*6,fade:anywhere?0:1})}
-function fsStart(){Object.assign(fs,{state:'play',trip:0,fish:[],bite:null,pops:[],spawn:0});for(let i=0;i<14;i++)spawnFish(true);clampHook();
+  fs.fish.push({type,x:F.still||anywhere?rnd(25,335):(dir>0?-25:385),y:rnd(F.top,F.bot),vx:F.still?0:dir*rnd(.35,.75)*(type==='gold'?1.8:type==='whale'||F.jelly?.5:1),vy:0,wig:Math.random()*6,fade:anywhere?0:1})}
+function fsStart(){Object.assign(fs,{state:'play',trip:0,fish:[],bite:null,pops:[],spawn:0});for(let i=0;i<30;i++)spawnFish(true);clampHook();
   $('fsgo').textContent='Stop fishing 🛑';$('fsm').textContent='Drag in the water to move your rod and hook. Then keep still and wait for a bite!';fsHud();audio&&audio()}
 $('fsgo').onclick=()=>fs.state==='play'?fsEnd():fsStart(); // no timer: fish for as long as you like
 function fsEnd(){fs.state='over';fs.bite=null;$('fsgo').textContent='Go again 🎣';
@@ -1851,7 +1856,7 @@ function reel(){const h=fs.hook,first=fs.bite;fs.bite=null;
   // the biting fish, plus the nearest others if you have more hooks
   const near=fs.fish.filter(f=>f!==first&&Math.hypot(f.x-h.x,f.y-h.y)<70).sort((a,b)=>Math.hypot(a.x-h.x,a.y-h.y)-Math.hypot(b.x-h.x,b.y-h.y));
   const got=[first,...near.slice(0,hookCount()-1)];let pts=0;
-  got.forEach((f,i)=>{pts+=FISH[f.type].pts;fs.pops.push({x:h.x,y:h.y-24-i*18,t:FISH[f.type].e+' +'+FISH[f.type].pts,l:70})});
+  got.forEach((f,i)=>{pts+=FISH[f.type].pts;fs.pops.push({x:h.x,y:h.y-24-i*18,t:(FISH[f.type].e||'✨')+' +'+FISH[f.type].pts,l:70})});
   fs.fish=fs.fish.filter(f=>!got.includes(f));fs.trip+=pts;fs.bank+=pts;fs.hook.still=0;fsSave();fsHud();
   $('fsm').textContent=(got.length>1?`${got.length} at once! `:'')+`You caught ${got.map(f=>FISH[f.type].n).join(' and ')}! +${pts}`+
     (got.some(f=>FISH[f.type].gold)?' ✨✨✨':got.every(f=>f.type==='boot')?' Oh well! 😄':'');
@@ -1891,11 +1896,11 @@ function stepFish(){
     if(--fs.biteT<=0){fs.bite=null;f.vx=(Math.random()<.5?-1:1)*1.4;h.still=0;$('fsm').textContent='It got away! Tap faster when you see BITE!'}}
   fs.fish=fs.fish.filter(f=>f.x>-40&&f.x<400);
   if(fs.state!=='play')return;
-  if(fs.fish.length<15&&--fs.spawn<=0){spawnFish(false);fs.spawn=40}
+  if(fs.fish.length<34&&--fs.spawn<=0){spawnFish(false);fs.spawn=25}
 }
 function drawFish(){
   const g=fg,b=fs.boat,h=fs.hook,bob=Math.sin(frame*.05)*2;
-  g.fillStyle='#06183d';g.fillRect(0,0,360,480);
+  g.fillStyle='#020a1f';g.fillRect(0,0,360,480);
   g.save();g.translate(0,-Math.round(fs.camY)); // everything below is in lake coordinates
   // sky, sun, hills on the far shore
   const sky=g.createLinearGradient(0,0,0,SURF);sky.addColorStop(0,'#8fd3ff');sky.addColorStop(1,'#e2f4ff');g.fillStyle=sky;g.fillRect(0,0,360,SURF);
@@ -1904,29 +1909,37 @@ function drawFish(){
   g.fillStyle='#5cbf6a';g.beginPath();g.moveTo(0,SURF);g.quadraticCurveTo(70,SURF-45,150,SURF);g.quadraticCurveTo(230,SURF-35,360,SURF-8);g.lineTo(360,SURF);g.fill();
   g.fillStyle='#3e9b52';[[40,SURF-14],[95,SURF-22],[250,SURF-16]].forEach(([x,y])=>{g.beginPath();g.arc(x,y,9,0,7);g.fill();g.fillRect(x-1.5,y,3,10)});
   // water gets darker as it gets deeper
-  const wa=g.createLinearGradient(0,SURF,0,BED);wa.addColorStop(0,'#5cb8ff');wa.addColorStop(.3,'#2a7bd1');wa.addColorStop(.65,'#123f86');wa.addColorStop(1,'#06183d');
+  const wa=g.createLinearGradient(0,SURF,0,BED);wa.addColorStop(0,'#5cb8ff');wa.addColorStop(.12,'#2a7bd1');wa.addColorStop(.3,'#123f86');wa.addColorStop(.6,'#071f4f');wa.addColorStop(1,'#020a1f');
   g.fillStyle=wa;g.fillRect(0,SURF,360,FS_BOTTOM-SURF);
   g.fillStyle='rgba(255,255,255,.07)';for(let i=0;i<4;i++){const x=40+i*95+Math.sin(frame*.01+i)*10;g.beginPath();g.moveTo(x,SURF);g.lineTo(x+30,SURF);g.lineTo(x-20,SURF+420);g.lineTo(x-50,SURF+420);g.fill()}
   g.strokeStyle='rgba(255,255,255,.6)';g.lineWidth=2;g.beginPath();for(let x=0;x<=360;x+=6)g.lineTo(x,SURF+Math.sin(x*.08+frame*.06)*1.5);g.stroke();
   g.fillStyle='rgba(255,255,255,.4)';for(let i=0;i<18;i++){const x=(i*47+20)%360,y=BED-((frame*.6+i*55)%(BED-SURF));g.beginPath();g.arc(x+Math.sin(y*.05)*3,y,2+i%3,0,7);g.fill()}
   // glowing specks in the deep dark water
-  for(let i=0;i<30;i++){const x=(i*83)%360,y=720+(i*37)%360;g.fillStyle=`rgba(${i%2?'124,255,214':'199,125,255'},${.25+.25*Math.sin(frame*.05+i)})`;g.beginPath();g.arc(x+Math.sin(frame*.01+i)*6,y,2,0,7);g.fill()}
+  for(let i=0;i<160;i++){const x=(i*83)%360,y=900+(i*137)%(BED-900);g.fillStyle=`rgba(${i%2?'124,255,214':'199,125,255'},${.25+.25*Math.sin(frame*.05+i)})`;g.beginPath();g.arc(x+Math.sin(frame*.01+i)*6,y,2,0,7);g.fill()}
   // depth markers down the right side
   g.font='bold 11px Nunito,sans-serif';g.textAlign='right';g.textBaseline='middle';
-  for(let y=SURF+100;y<BED;y+=100){g.fillStyle='rgba(255,255,255,.35)';g.fillRect(346,y,14,2);g.fillText(depthM(y)+' m',342,y)}
+  for(let y=SURF+250;y<BED;y+=250){g.fillStyle='rgba(255,255,255,.35)';g.fillRect(346,y,14,2);g.fillText(depthM(y)+' m',342,y)}
   // lake bed with weeds, rocks and a sunken anchor
   g.fillStyle='#b99a63';g.beginPath();g.moveTo(0,BED);for(let x=0;x<=360;x+=30)g.lineTo(x,BED+Math.sin(x*.05)*4);g.lineTo(360,FS_BOTTOM);g.lineTo(0,FS_BOTTOM);g.fill();
   g.strokeStyle='#1f7a45';g.lineWidth=4;g.lineCap='round';[20,70,150,215,300,340].forEach((x,i)=>{g.beginPath();g.moveTo(x,BED+4);for(let k=1;k<=5;k++)g.lineTo(x+Math.sin(frame*.03+k+i)*5,BED+4-k*16-(i%2)*6);g.stroke()});
   g.fillStyle='#7d7064';[[110,BED+8],[255,BED+10],[185,BED+12]].forEach(([x,y])=>{g.beginPath();g.ellipse(x,y,12,6,0,0,7);g.fill()});
   g.strokeStyle='#5c6380';g.lineWidth=4;g.beginPath();g.moveTo(275,BED-2);g.lineTo(275,BED-36);g.moveTo(262,BED-30);g.lineTo(288,BED-30);g.arc(275,BED-12,13,Math.PI*.15,Math.PI*.85);g.stroke();
   g.fillStyle='rgba(255,255,255,.55)';g.font='bold 11px Nunito,sans-serif';g.textAlign='left';g.textBaseline='middle';
-  g.fillText('Shallow: little fish',8,SURF+14);g.fillText('Deeper: BIGGER fish!',8,SURF+420);g.fillText('The deep dark bottom: GIANT fish and treasure!',8,BED-60);
+  g.fillText('Shallow: little fish',8,SURF+14);g.fillText('Deeper: BIGGER fish!',8,700);g.fillText('The deep dark: glowing jellyfish!',8,1350);
+  g.fillText('Even deeper: WHALES!',8,1800);g.fillText('The very bottom: sea dragons and treasure!',8,BED-90);
   // how far the rod reaches
   if(fs.state==='play'){g.strokeStyle='rgba(255,255,255,.45)';g.setLineDash([5,6]);g.lineWidth=1.5;
     g.strokeRect(Math.max(4,b.x-reachX()),SURF+8,Math.min(356,b.x+reachX())-Math.max(4,b.x-reachX()),reachY()-SURF);g.setLineDash([])}
   // fish
   g.textAlign='center';g.textBaseline='middle';
-  for(const f of fs.fish){const F=FISH[f.type];g.globalAlpha=f.fade;
+  const top=fs.camY-60,bottom=fs.camY+540;
+  for(const f of fs.fish){if(f.y<top||f.y>bottom)continue;const F=FISH[f.type];g.globalAlpha=f.fade;
+    if(F.jelly){ // a glowing jellyfish, drawn by hand
+      const pulse=Math.sin(frame*.08+f.wig)*2;g.shadowColor='#ff9ee6';g.shadowBlur=16;g.fillStyle='rgba(255,150,230,.85)';
+      g.beginPath();g.arc(f.x,f.y,13+pulse,Math.PI,0);g.quadraticCurveTo(f.x+8,f.y+4,f.x,f.y+2);g.quadraticCurveTo(f.x-8,f.y+4,f.x-13-pulse,f.y);g.fill();g.shadowBlur=0;
+      g.strokeStyle='rgba(255,190,240,.8)';g.lineWidth=2;for(let k=-2;k<=2;k++){g.beginPath();g.moveTo(f.x+k*5,f.y+2);
+        for(let s=1;s<=4;s++)g.lineTo(f.x+k*5+Math.sin(frame*.1+s+k)*3,f.y+2+s*6);g.stroke()}
+      g.fillStyle='#14213d';g.beginPath();g.arc(f.x-4,f.y-5,1.6,0,7);g.arc(f.x+4,f.y-5,1.6,0,7);g.fill();continue}
     g.fillStyle=F.gold?'rgba(255,230,120,.75)':'rgba(230,245,255,.5)';g.beginPath();g.arc(f.x,f.y,F.s*.6,0,7);g.fill();
     g.save();g.translate(f.x,f.y);if(f.type!=='boot'&&f.face>0)g.scale(-1,1);g.font=F.s+'px sans-serif';g.fillStyle='#14213d';
     if(F.gold){g.shadowColor='#ffd23f';g.shadowBlur=14}if(f.type==='gold')g.filter='sepia(1) saturate(4) brightness(1.15)';g.fillText(F.e,0,0);g.restore();
