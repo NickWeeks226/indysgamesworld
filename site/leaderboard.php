@@ -13,7 +13,7 @@ $games = array(
   'maze' => array(false, 200), 'foot' => array(false, 10), 'rug' => array(false, 10),
   'cri' => array(false, 100), 'code' => array(false, 50), 'olymp' => array(false, 12),
   'pin' => array(false, 1000000), 'space' => array(false, 1000000), 'golf' => array(true, 500),
-  'snake' => array(false, 100000), 'whack' => array(false, 100000), 'fish' => array(false, 100000),
+  'snake' => array(false, 100000), 'whack' => array(false, 100000), 'fish' => array(false, 100000), 'fight' => array(false, 100000),
 );
 $keep = 10;
 

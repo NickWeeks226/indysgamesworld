@@ -127,6 +127,10 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
 .lbsave form{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
 .lbsave input{font:inherit;font-weight:800;width:10rem;padding:.4rem .6rem;border:3px solid var(--edge);border-radius:10px;background:#fff;color:#14213d;min-height:44px}
 .lbsave small{display:block;margin-top:.45rem;font-weight:600}
+.rrpad{display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap;margin-top:.8rem}
+.rrgrp{display:flex;gap:.4rem;flex-wrap:wrap}
+.rrgrp .btn{min-width:56px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.rrgrp .btn:disabled{opacity:.45}
 .worlds-link{display:inline-flex;align-items:center;min-height:44px;font-weight:800;text-decoration:none;padding:.4rem 1rem;border:3px solid var(--edge);border-radius:12px;background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--edge)}
 .worlds-link:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
 .worlds-link:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
@@ -147,7 +151,7 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
     </svg>
     <p id="hint">Click the logo to add a ball. Get to 10 for a surprise…</p>
     <h1 id="title" aria-label="George's Brain-Twister Arcade">George's Brain-Twister Arcade</h1>
-    <p class="tag">Thirteen games. Some of them are trying to trick you.</p>
+    <p class="tag">Fourteen games. Some of them are trying to trick you.</p>
   </header>
 
   <nav role="tablist">
@@ -164,6 +168,7 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
     <button role="tab" data-g="snake" aria-selected="false"><span class="ico">🐍</span>Snake</button>
     <button role="tab" data-g="whack" aria-selected="false"><span class="ico">🔨</span>Whack-a-Mole</button>
     <button role="tab" data-g="fish" aria-selected="false"><span class="ico">🎣</span>Fishing</button>
+    <button role="tab" data-g="fight" aria-selected="false"><span class="ico">🥊</span>Robot Rumble</button>
   </nav>
 
   <!-- MAZE -->
@@ -367,6 +372,20 @@ footer{text-align:center;color:var(--soft);margin-top:2rem;font-size:.95rem}
     <div class="bar"><span class="score" id="fss">Bank: 0 points</span><span id="fshi" style="font-weight:800;color:var(--soft)"></span></div>
     <div class="olctrl"><button class="btn alt" id="fsrod"></button><button class="btn alt" id="fshook"></button></div>
     <p class="msg" id="fsm">Press Start fishing! Fish for as long as you like, then press Stop fishing.</p>
+  </section>
+
+  <!-- ROBOT RUMBLE -->
+  <section class="game" id="fight">
+    <h2>Robot Rumble</h2>
+    <p class="how">Your robot from Robot Maker fights with springy boxing gloves! Beat 4 robots, best of 3 rounds each. Hitting fills your ⚡ meter: when it's full, fire a Bubble Blast (jump over theirs!). Block to stop most of a hit. Run their battery down and they sit down for a nap. Keys: ← → move, ↑ jump, A punch, S kick, hold D to block, Space for Bubble Blast.</p>
+    <canvas id="rrc" width="480" height="300"></canvas>
+    <p class="vs" id="rrvs"></p>
+    <div class="rrpad">
+      <div class="rrgrp"><button class="btn alt" id="rrl" aria-label="Move left">◀</button><button class="btn alt" id="rrj" aria-label="Jump">⬆</button><button class="btn alt" id="rrr" aria-label="Move right">▶</button></div>
+      <div class="rrgrp"><button class="btn" id="rrp">👊 Punch</button><button class="btn" id="rrk">🦶 Kick</button><button class="btn alt" id="rrb">🛡️ Block</button><button class="btn big" id="rrsp" disabled>⚡ Bubble</button></div>
+    </div>
+    <div class="bar"><span class="score" id="rrs2">Score 0</span><span id="rrhi" style="font-weight:800;color:var(--soft)"></span><button class="btn big" id="rrgo">Start 🥊</button></div>
+    <p class="msg" id="rrm">Make your robot in Robot Maker, then press Start!</p>
   </section>
 
   <button id="tohome" aria-label="Back to the game menu">🎮 Games</button>
@@ -1284,7 +1303,7 @@ function hiSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 /* ===================== LEADERBOARDS ===================== */
 // One shared board per game, kept by leaderboard.php. Games call lbOffer() when there's a score to save.
 const LB={maze:{u:'levels'},foot:{u:'points'},rug:{u:'points'},cri:{u:'runs'},code:{u:'levels'},olymp:{u:'medal points'},
-  pin:{u:'points'},space:{u:'points'},golf:{u:'strokes',low:true},snake:{u:'points'},whack:{u:'points'},fish:{u:'points'}};
+  pin:{u:'points'},space:{u:'points'},golf:{u:'strokes',low:true},snake:{u:'points'},whack:{u:'points'},fish:{u:'points'},fight:{u:'points'}};
 const lbLists={};
 function lbEl(g){return document.querySelector(`.lb[data-game="${g}"]`)}
 function lbDraw(g,me){
@@ -1923,6 +1942,224 @@ function drawFish(){
 }
 for(let i=0;i<7;i++)spawnFish(true);clampHook();fsHud();
 
+/* ===================== ROBOT RUMBLE ===================== */
+// A friendly fighting game: robots bop each other with springy boxing gloves.
+// Nobody gets hurt: when a robot's battery runs out, it sits down for a nap.
+const rrc=$('rrc'),rrg=rrc.getContext('2d');
+const RR_FLOOR=272,RR_SC=1.55,RR_W=1000,RR_GAP=380; // the street is wider than the screen; the camera follows the fight
+const RR_FOES=[
+  {n:'Bolt-3000',d:{head:2,eyes:1,body:2,arms:0,legs:0,ant:1,col:'#ff4f8b',acc:'#ffd23f'},lv:1,glove:'#2b6cff'},
+  {n:'Clank',d:{head:0,eyes:3,body:0,arms:1,legs:2,ant:2,col:'#ffd23f',acc:'#ff8c42'},lv:2,glove:'#1f9d55'},
+  {n:'Zippy',d:{head:1,eyes:2,body:1,arms:2,legs:1,ant:3,col:'#7cc4ff',acc:'#c77dff'},lv:3,glove:'#ff8c42',fast:true},
+  {n:'MEGA MUDDLE',d:{head:3,eyes:1,body:2,arms:3,legs:3,ant:2,col:'#c77dff',acc:'#3ddc84'},lv:4,glove:'#ffd23f',boss:true}];
+const RR_MOVES={punch:{dur:20,on:6,off:11,reach:80,dmg:7,word:'BOING!'},kick:{dur:28,on:10,off:17,reach:86,dmg:10,word:'BONK!'}};
+const rr={state:'menu',foe:0,round:1,wins:[0,0],score:0,time:0,msg:'',msgT:0,pops:[],bubbles:[],keys:{l:false,r:false,b:false},hi:hiGet('rumblehi'),shake:0};
+let rrP=null,rrC=null;
+function rrFighter(d,name,x,dir,extra){return Object.assign({d,name,x,y:0,vy:0,dir,hp:100,pow:0,act:'idle',t:0,cool:0,step:0,move:0,think:30,blockT:0,glove:'#d62839',lv:0},extra||{})}
+function rrBoing(f0){const a=audio();if(!a)return;try{const o=a.createOscillator(),gn=a.createGain(),t=a.currentTime;o.type='triangle';o.frequency.setValueAtTime(f0,t);
+  o.frequency.exponentialRampToValueAtTime(f0*2.4,t+.12);gn.gain.setValueAtTime(.14,t);gn.gain.exponentialRampToValueAtTime(.001,t+.22);o.connect(gn).connect(a.destination);o.start(t);o.stop(t+.24)}catch(e){}}
+function rrHud(){$('rrs2').textContent=`Score ${rr.score}`;$('rrhi').textContent=rr.hi?'Best: '+rr.hi:'';
+  const f=RR_FOES[rr.foe];$('rrvs').textContent=rr.state==='menu'?'':`Fight ${rr.foe+1} of ${RR_FOES.length}: you vs ${f.n}`}
+function rrNewRound(){
+  const f=RR_FOES[rr.foe];
+  rrP=rrFighter({...mk},(mk.name||'G-Bot'),RR_W/2-110,1);
+  rrC=rrFighter(f.d,f.n,RR_W/2+110,-1,{glove:f.glove,lv:f.lv,fast:!!f.fast,boss:!!f.boss,cpu:true});
+  Object.assign(rr,{time:60*60,state:'intro',msg:`ROUND ${rr.round}`,msgT:100,bubbles:[],pops:[]});rrHud();
+  $('rrm').textContent=`Round ${rr.round} against ${f.n}! Get ready…`;
+}
+function rrStart(){
+  if(rr.state==='over'||rr.state==='champ'||rr.state==='menu'){rr.foe=0;rr.score=0}
+  rr.wins=[0,0];rr.round=1;$('rrgo').disabled=true;rrNewRound();audio&&audio()}
+$('rrgo').onclick=rrStart;
+function rrAttack(f,kind){if(rr.state!=='fight'||f.cool>0||!(f.act==='idle'||f.act==='walk'))return;f.act=kind;f.t=0;f.hit=false}
+function rrJump(f){if(rr.state==='fight'&&f.y===0&&(f.act==='idle'||f.act==='walk'||f.act==='block')){f.vy=-10.5;f.act='idle'}}
+function rrZap(f){if(rr.state!=='fight'||f.pow<100||!(f.act==='idle'||f.act==='walk'))return;
+  f.pow=0;f.act='zap';f.t=0;rr.bubbles.push({x:f.x+f.dir*42,y:RR_FLOOR+f.y-62,vx:f.dir*5.2,owner:f,r:6});rrBoing(220)}
+function rrHit(a,b,dmg,word){
+  const blocked=b.act==='block'&&Math.sign(a.x-b.x)===b.dir;
+  const d=Math.max(1,Math.round(dmg*(blocked?.2:1)));b.hp=Math.max(0,b.hp-d);
+  if(!blocked){b.act='hurt';b.t=0}b.x+=a.dir*(blocked?5:16);
+  a.pow=Math.min(100,a.pow+(blocked?5:14));b.pow=Math.min(100,b.pow+6);
+  if(a===rrP)rr.score+=d;
+  rr.pops.push({x:b.x,y:RR_FLOOR+b.y-130,t:blocked?'BLOCK!':word,l:42,c:blocked?'#7cc4ff':'#ffd23f'});
+  rr.shake=blocked?2:6;rrBoing(blocked?180:word==='SPLOOSH!'?260:340);rrHud();
+}
+function rrStepFighter(f,o){
+  if(f.cool>0)f.cool--;
+  if(f.y<0||f.vy){f.vy+=.55;f.y+=f.vy;if(f.y>=0){f.y=0;f.vy=0}}
+  if(f.act==='out'||f.act==='win')return;
+  if(f.act==='hurt'){if(++f.t>=14)f.act='idle';return}
+  if(f.act==='zap'){if(++f.t>=16)f.act='idle';return}
+  const M=RR_MOVES[f.act];
+  if(M){f.t++;
+    if(!f.hit&&f.t>=M.on&&f.t<=M.off){const dx=(o.x-f.x)*f.dir,okY=f.act==='punch'?o.y>-62:o.y>-26;
+      if(dx>0&&dx<M.reach&&okY&&o.act!=='out'){f.hit=true;rrHit(f,o,M.dmg*(f.boss?1.15:1),M.word)}}
+    if(f.t>=M.dur){f.act='idle';f.cool=7}return}
+  // walking, blocking
+  const wantBlock=f.cpu?f.blockT>0:rr.keys.b;
+  if(f.cpu&&f.blockT>0)f.blockT--;
+  if(wantBlock&&f.y===0){f.act='block';return}
+  if(f.act==='block')f.act='idle';
+  const mv=f.cpu?f.move:(rr.keys.r?1:0)-(rr.keys.l?1:0),sp=f.fast?3.3:f.cpu?2.3:2.8;
+  if(mv){f.x+=mv*sp;f.step+=.25;f.act='walk'}else if(f.act==='walk')f.act='idle';
+}
+function rrThink(c,p){
+  // the computer robot: cleverer and quicker in later fights
+  if(--c.think>0)return;c.think=Math.max(6,24-c.lv*4)+Math.floor(Math.random()*10);
+  const dist=Math.abs(p.x-c.x),r=Math.random();c.move=0;
+  const incoming=rr.bubbles.find(b=>b.owner===p&&Math.sign(c.x-b.x)===Math.sign(b.vx)&&Math.abs(c.x-b.x)<150);
+  if(incoming&&c.y===0&&r<.25+c.lv*.15){rrJump(c);return}
+  if((p.act==='punch'||p.act==='kick')&&dist<95&&r<.12+c.lv*.12){c.blockT=18;return}
+  if(c.pow>=100&&dist>110&&r<.6){rrZap(c);return}
+  if(dist>78){c.move=Math.sign(p.x-c.x);if(r<.05*c.lv)rrJump(c);return}
+  if(r<.5+c.lv*.08)rrAttack(c,Math.random()<.6?'punch':'kick');else if(r<.85)c.move=-Math.sign(p.x-c.x);else rrJump(c);
+}
+function rrEndRound(winner){
+  const loser=winner===rrP?rrC:rrP;
+  if(loser.hp<=0)loser.act='out';winner.act='win';
+  const iWon=winner===rrP;rr.wins[iWon?0:1]++;
+  if(iWon){rr.score+=100;if(rrP.hp>=100){rr.score+=100;rr.pops.push({x:rrP.x,y:120,t:'PERFECT!',l:90,c:'#3ddc84'})}}
+  rr.state='roundEnd';rr.msgT=150;rr.msg=loser.hp<=0?`${loser.name.toUpperCase()} IS OUT OF BATTERY!`:`TIME! ${winner.name.toUpperCase()} WINS`;
+  $('rrm').textContent=iWon?`You won round ${rr.round}! 🎉`:`${winner.name} won round ${rr.round}. You can do it!`;
+  if(iWon)playCheer&&playCheer();rrHud();
+}
+function rrAfterRound(){
+  const f=RR_FOES[rr.foe];
+  if(rr.wins[0]>=2){rr.score+=300;
+    if(rr.foe>=RR_FOES.length-1){rr.state='champ';rr.msg='CHAMPION!';rrFinish(`You beat MEGA MUDDLE! You're the ROBOT RUMBLE CHAMPION! 🏆`);return}
+    rr.state='matchWin';rr.msg=`YOU BEAT ${f.n.toUpperCase()}!`;rr.foe++;
+    $('rrm').textContent=`Brilliant! Next up: ${RR_FOES[rr.foe].n}${RR_FOES[rr.foe].boss?' — the BOSS!':''}`;$('rrgo').textContent='Next fight ▶';$('rrgo').disabled=false;rrHud();return}
+  if(rr.wins[1]>=2){rr.state='over';rr.msg='GAME OVER';rrFinish(`${f.n} won this time. You scored ${rr.score}!`);return}
+  rr.round++;rrNewRound();
+}
+function rrFinish(text){
+  const best=rr.score>rr.hi;if(best){rr.hi=rr.score;hiSet('rumblehi',rr.hi)}
+  $('rrm').textContent=text+(best?' NEW HIGH SCORE! 🏆':'');$('rrgo').textContent='Play again 🔁';$('rrgo').disabled=false;rrHud();
+  lbOffer('fight',rr.score,`You scored ${rr.score} points!`)}
+function stepRumble(){
+  for(const p of rr.pops){p.y-=.6;p.l--}rr.pops=rr.pops.filter(p=>p.l>0);if(rr.shake>0)rr.shake--;
+  if(!rrP)return;
+  if(rr.state==='intro'){if(--rr.msgT<=0){rr.state='fight';rr.msg='FIGHT!';rr.msgT=45;$('rrm').textContent='Go go go! 🥊'}return}
+  if(rr.state==='roundEnd'){rrStepFighter(rrP,rrC);rrStepFighter(rrC,rrP);if(--rr.msgT<=0)rrAfterRound();return}
+  if(rr.state!=='fight')return;
+  if(rr.msgT>0)rr.msgT--;
+  const px=rrP.x,cx=rrC.x;
+  rrThink(rrC,rrP);rrStepFighter(rrP,rrC);rrStepFighter(rrC,rrP);
+  // face each other, don't overlap, stay on the street, and don't wander off the screen
+  rrP.dir=Math.sign(rrC.x-rrP.x)||1;rrC.dir=-rrP.dir;
+  const gap=Math.abs(rrC.x-rrP.x);if(gap<48&&Math.abs(rrC.y-rrP.y)<60){const push=(48-gap)/2;rrP.x-=rrP.dir*push;rrC.x-=rrC.dir*push}
+  if(Math.abs(rrC.x-rrP.x)>RR_GAP&&Math.abs(rrC.x-rrP.x)>Math.abs(cx-px)){rrP.x=px;rrC.x=cx}
+  [rrP,rrC].forEach(f=>{f.x=Math.max(40,Math.min(RR_W-40,f.x))});
+  for(const b of rr.bubbles){b.x+=b.vx;b.r=Math.min(18,b.r+1);const o=b.owner===rrP?rrC:rrP;
+    if(!b.done&&Math.abs(b.x-o.x)<30&&o.y>-50&&o.act!=='out'){b.done=true;rrHit(b.owner,o,20,'SPLOOSH!')}}
+  rr.bubbles=rr.bubbles.filter(b=>!b.done&&b.x>-30&&b.x<RR_W+30);
+  $('rrsp').disabled=rrP.pow<100;
+  if(rrP.hp<=0)return rrEndRound(rrC);if(rrC.hp<=0)return rrEndRound(rrP);
+  if(--rr.time<=0)return rrEndRound(rrP.hp>=rrC.hp?rrP:rrC);
+}
+function rrDrawFighter(g,f){
+  const sc=RR_SC*(f.boss?1.15:1),fx=f.x,fy=RR_FLOOR+f.y;
+  g.fillStyle='rgba(0,0,0,.25)';g.beginPath();g.ellipse(fx,RR_FLOOR+2,30*(1+f.y/300),6,0,0,7);g.fill();
+  // springy glove (punch high, kick low)
+  const M=RR_MOVES[f.act],p=M?Math.min(1,f.t/M.dur):0,ext=M?Math.sin(p*Math.PI)*(M.reach-18):0;
+  const gy=fy-(f.act==='kick'?16:40)*sc,gx0=fx+f.dir*14*sc,gx=gx0+f.dir*(10+ext)+(f.act==='idle'||f.act==='walk'?Math.sin(frame*.15)*2:0);
+  const tilt=f.act==='hurt'?-f.dir*.18:f.act==='out'?-f.dir*.5:0;
+  g.save();g.translate(fx,fy);g.rotate(tilt);drawRobot(g,f.d,0,0,sc,f.step,f.act==='win');g.restore();
+  if(f.act==='out'){g.fillStyle='#fff';g.font='bold 20px Bungee,Impact,sans-serif';g.textAlign='center';
+    for(let k=0;k<3;k++){const zt=(frame*.02+k*.33)%1;g.globalAlpha=1-zt;g.fillText('z',fx-f.dir*(20+zt*30),fy-110*sc/1.55-zt*40-k*4)}g.globalAlpha=1;return}
+  if(f.act==='win')return;
+  g.strokeStyle='#5c6380';g.lineWidth=3;g.beginPath();g.moveTo(gx0,gy);
+  const n=8;for(let k=1;k<n;k++){const xx=gx0+(gx-gx0)*k/n;g.lineTo(xx,gy+(k%2?-6:6))}g.lineTo(gx,gy);g.stroke();
+  g.fillStyle=f.glove;g.strokeStyle='#14213d';g.lineWidth=2.5;
+  if(f.act==='kick'){g.beginPath();g.roundRect?g.roundRect(gx-12,gy-9,24,18,7):g.rect(gx-12,gy-9,24,18);g.fill();g.stroke()}
+  else{g.beginPath();g.arc(gx,gy,12,0,7);g.fill();g.stroke();g.fillStyle='rgba(255,255,255,.6)';g.beginPath();g.arc(gx-4,gy-4,3.5,0,7);g.fill()}
+  if(f.act==='block'){g.strokeStyle='rgba(124,196,255,.9)';g.fillStyle='rgba(124,196,255,.25)';g.lineWidth=4;g.beginPath();g.arc(fx,fy-55,58,f.dir>0?-1.1:Math.PI-1.1+0,f.dir>0?1.1:Math.PI+1.1);g.fill();g.stroke()}
+}
+function rrBar(g,x,w,f,right){
+  g.fillStyle='#14213d';g.fillRect(x-2,10,w+4,20);
+  const c=f.hp>50?'#3ddc84':f.hp>25?'#ffd23f':'#ff4f8b',fw=w*f.hp/100;g.fillStyle=c;g.fillRect(right?x+w-fw:x,12,fw,16);
+  g.fillStyle='#14213d';g.fillRect(x-2,32,w+4,8);g.fillStyle=f.pow>=100&&frame%20<10?'#fff':'#7cc4ff';const pw=w*f.pow/100;g.fillRect(right?x+w-pw:x,33,pw,6);
+  g.fillStyle='#fff';g.font='bold 12px Nunito,sans-serif';g.textAlign=right?'right':'left';g.textBaseline='middle';
+  g.fillText(`🔋 ${f.name}`+(f.pow>=100?'  ⚡READY':''),right?x+w:x,50);
+}
+const RR_SHOPS=[['PIZZA 🍕','#ff9ec4','#ff4f8b'],['ARCADE','#7cc4ff','#2b6cff'],['ROBOT PARTS','#ffd23f','#ff8c42'],['ICE CREAM 🍦','#c4a3ff','#c77dff'],['COMICS','#8fe3b0','#1f9d55'],['BUBBLE TEA','#ffc59a','#ff8c42']];
+function rrStreet(g,cam){
+  // sky
+  const sky=g.createLinearGradient(0,0,0,215);sky.addColorStop(0,'#6ec6ff');sky.addColorStop(1,'#ffd9b0');g.fillStyle=sky;g.fillRect(-10,-10,500,240);
+  g.fillStyle='#fff6c2';g.beginPath();g.arc(400-cam*.1,52,18,0,7);g.fill();
+  // far-away buildings slide slowly (they look further away)
+  g.save();g.translate(-cam*.5,0);
+  for(let i=0,x=-20;x<RR_W*.5+500;i++){const w=50+(i*37)%34,h=70+(i*53)%80;g.fillStyle=['#9aa3e0','#b0a6e8','#8f9ad6'][i%3];g.fillRect(x,215-h-40,w,h+40);
+    g.fillStyle='rgba(255,255,255,.55)';for(let wy=215-h-30;wy<190;wy+=16)for(let wx=x+7;wx<x+w-8;wx+=13)if((wx*7+wy*3+i)%5)g.fillRect(wx,wy,6,8);x+=w+4}
+  g.restore();
+  g.save();g.translate(-cam,0);
+  // shops along the street
+  for(let i=0;i*170<RR_W+170;i++){const [name,wall,awn]=RR_SHOPS[i%RR_SHOPS.length],x=i*170-10,h=118+(i%3)*12,top=215-h;
+    g.fillStyle=wall;g.strokeStyle='#14213d';g.lineWidth=2.5;g.fillRect(x,top,166,h);g.strokeRect(x,top,166,h);
+    g.fillStyle='#e6f2ff';for(let k=0;k<3;k++){g.fillRect(x+16+k*48,top+12,30,22);g.strokeRect(x+16+k*48,top+12,30,22)}
+    g.fillStyle='#fff';g.fillRect(x+20,top+44,126,22);g.strokeRect(x+20,top+44,126,22);
+    g.fillStyle='#14213d';g.font='bold 13px Bungee,Impact,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(name,x+83,top+56);
+    for(let k=0;k<8;k++){g.fillStyle=k%2?'#fff':awn;g.fillRect(x+3+k*20,top+72,20,14)}
+    g.fillStyle=awn;for(let k=0;k<8;k++){g.beginPath();g.arc(x+13+k*20,top+86,10,0,Math.PI);g.fill()}
+    g.fillStyle='#bfe3ff';g.fillRect(x+14,top+100,82,215-top-100);g.strokeRect(x+14,top+100,82,215-top-100);
+    g.fillStyle='rgba(255,255,255,.6)';g.beginPath();g.moveTo(x+24,213);g.lineTo(x+44,top+102);g.lineTo(x+54,top+102);g.lineTo(x+34,213);g.fill();
+    g.fillStyle='#6b3e18';g.fillRect(x+110,top+100,36,215-top-100);g.strokeRect(x+110,top+100,36,215-top-100);g.fillStyle='#ffd23f';g.beginPath();g.arc(x+139,top+130,2.5,0,7);g.fill()}
+  // pavement, kerb and road
+  g.fillStyle='#d3d6e0';g.fillRect(-20,215,RR_W+40,36);g.strokeStyle='#b4b8c8';g.lineWidth=1.5;
+  for(let x=0;x<RR_W;x+=40){g.beginPath();g.moveTo(x,215);g.lineTo(x-10,251);g.stroke()}
+  g.fillStyle='#9aa0b4';g.fillRect(-20,251,RR_W+40,6);g.fillStyle='#4a4f63';g.fillRect(-20,257,RR_W+40,50);
+  g.fillStyle='#fff';for(let x=10;x<RR_W;x+=70)g.fillRect(x,292,36,4);
+  // street lamps, a fire hydrant, a bin, and cheering friends on the pavement
+  [130,500,870].forEach(x=>{g.fillStyle='#3b4260';g.fillRect(x-3,110,6,108);g.fillRect(x-3,110,22,5);g.fillStyle='#fff6c2';g.beginPath();g.arc(x+20,118,7,0,7);g.fill()});
+  g.fillStyle='#e53935';g.strokeStyle='#14213d';g.lineWidth=2;g.fillRect(330,222,14,22);g.strokeRect(330,222,14,22);g.beginPath();g.arc(337,222,8,Math.PI,0);g.fill();g.stroke();g.fillRect(326,229,22,5);
+  g.fillStyle='#5c6380';g.fillRect(700,220,20,26);g.strokeRect(700,220,20,26);g.fillStyle='#3b4260';g.fillRect(697,217,26,5);
+  const cols=['#ff4f8b','#ffd23f','#7cc4ff','#3ddc84','#c77dff','#ff8c42'];
+  [225,250,275,580,605,780,805,830].forEach((x,i)=>{const y=226-Math.abs(Math.sin(frame*.12+i))*(rr.state==='roundEnd'?6:2);
+    g.fillStyle=cols[i%cols.length];g.beginPath();g.arc(x,y,8,0,7);g.fill();g.fillRect(x-8,y+6,16,14);
+    g.fillStyle='#14213d';g.beginPath();g.arc(x-3,y-1,1.5,0,7);g.arc(x+3,y-1,1.5,0,7);g.fill()});
+  // traffic cones mark the ends of the street
+  [24,RR_W-24].forEach(x=>{g.fillStyle='#ff8c42';g.beginPath();g.moveTo(x-12,286);g.lineTo(x,250);g.lineTo(x+12,286);g.fill();g.fillStyle='#fff';g.fillRect(x-7,264,14,5);g.fillStyle='#ff8c42';g.fillRect(x-15,284,30,5)});
+}
+function drawRumble(){
+  const g=rrg;g.save();if(rr.shake)g.translate(Math.random()*rr.shake-rr.shake/2,Math.random()*rr.shake-rr.shake/2);
+  const mid=rrP?(rrP.x+rrC.x)/2:RR_W/2,want=Math.max(0,Math.min(RR_W-480,mid-240));
+  rr.cam=rr.cam===undefined?want:rr.cam+(want-rr.cam)*.12;
+  rrStreet(g,rr.cam); // leaves the world layer (moved by the camera) active
+  if(rrP){rrDrawFighter(g,rrC);rrDrawFighter(g,rrP)}
+  else{drawRobot(g,mk,RR_W/2-110,RR_FLOOR+Math.sin(frame*.08)*2,RR_SC,frame*.05,true);drawRobot(g,RR_FOES[0].d,RR_W/2+110,RR_FLOOR,RR_SC,0,false)}
+  for(const b of rr.bubbles){g.fillStyle='rgba(124,196,255,.45)';g.strokeStyle='#fff';g.lineWidth=2;g.beginPath();g.arc(b.x,b.y,b.r,0,7);g.fill();g.stroke();
+    g.fillStyle='rgba(255,255,255,.8)';g.beginPath();g.arc(b.x-b.r*.35,b.y-b.r*.35,b.r*.25,0,7);g.fill()}
+  for(const p of rr.pops){g.globalAlpha=Math.min(1,p.l/15);g.save();g.translate(p.x,p.y);g.fillStyle='#fff';g.beginPath();
+    for(let k=0;k<16;k++){const r=k%2?16:28,a=k*Math.PI/8;g.lineTo(Math.cos(a)*r*1.6,Math.sin(a)*r)}g.closePath();g.fill();
+    g.fillStyle=p.c;g.strokeStyle='#14213d';g.lineWidth=3;g.font='bold 18px Bungee,Impact,sans-serif';g.textAlign='center';g.textBaseline='middle';g.strokeText(p.t,0,0);g.fillText(p.t,0,0);g.restore()}
+  g.globalAlpha=1;g.restore(); // back to screen space for the scoreboard
+  if(rrP){rrBar(g,14,180,rrP,false);rrBar(g,286,180,rrC,true);
+    g.fillStyle='#fff';g.font='bold 22px Bungee,Impact,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(Math.ceil(rr.time/60),240,24);
+    g.fillStyle='#ffd23f';g.font='bold 14px Nunito,sans-serif';g.fillText('⭐'.repeat(rr.wins[0])+' ROUND '+rr.round+' '+'⭐'.repeat(rr.wins[1]),240,48)}
+  const show=rr.state!=='fight'||rr.msgT>0;
+  if(show){const big=rr.state==='menu'?'ROBOT RUMBLE':rr.msg;g.fillStyle='rgba(20,33,61,.65)';g.fillRect(-10,92,500,64);
+    g.fillStyle=rr.state==='over'?'#ff4f8b':'#ffd23f';g.font=`bold ${big.length>20?18:28}px Bungee,Impact,sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(big,240,116);
+    g.fillStyle='#fff';g.font='bold 13px Nunito,sans-serif';
+    g.fillText(rr.state==='menu'?'Press Start to fight!':rr.state==='matchWin'?'Press Next fight below':rr.state==='over'||rr.state==='champ'?'Press Play again below':'',240,142)}
+  g.restore();
+}
+// controls: hold buttons to move or block, tap to punch, kick, jump or blast
+[['rrl','l'],['rrr','r'],['rrb','b']].forEach(([id,k])=>{const b=$(id);
+  b.addEventListener('pointerdown',e=>{e.preventDefault();rr.keys[k]=true});
+  ['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,()=>{rr.keys[k]=false}))});
+[['rrj',()=>rrJump(rrP)],['rrp',()=>rrAttack(rrP,'punch')],['rrk',()=>rrAttack(rrP,'kick')],['rrsp',()=>rrZap(rrP)]].forEach(([id,fn])=>
+  $(id).addEventListener('pointerdown',e=>{e.preventDefault();if(rrP)fn()}));
+const RR_KEYS={ArrowLeft:'l',ArrowRight:'r',KeyD:'b',KeyC:'b',ShiftLeft:'b'};
+document.addEventListener('keydown',e=>{if(active!=='fight')return;
+  if(RR_KEYS[e.code]){e.preventDefault();rr.keys[RR_KEYS[e.code]]=true;return}
+  if(!rrP||e.repeat)return;
+  if(e.code==='ArrowUp'){e.preventDefault();rrJump(rrP)}
+  else if(e.code==='KeyA'||e.code==='KeyZ')rrAttack(rrP,'punch');
+  else if(e.code==='KeyS'||e.code==='KeyX')rrAttack(rrP,'kick');
+  else if(e.code==='Space'){e.preventDefault();rrZap(rrP)}});
+document.addEventListener('keyup',e=>{if(RR_KEYS[e.code])rr.keys[RR_KEYS[e.code]]=false});
+rrHud();
+
 /* ===================== LOOP ===================== */
 function loop(){frame++;
   if(active==='foot'){stepFoot();drawFoot()}
@@ -1936,6 +2173,7 @@ function loop(){frame++;
   if(active==='snake'){stepSnake();drawSnake()}
   if(active==='whack'){stepWhack();drawWhack()}
   if(active==='fish'){stepFish();drawFish()}
+  if(active==='fight'){stepRumble();drawRumble()}
   if(active==='code'&&!cd.running&&frame%3===0&&lvl().m.some(r=>r.includes('T')))drawCode();
   requestAnimationFrame(loop);
 }
