@@ -149,6 +149,51 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:4px dash
 .el.sel{background:var(--pink);color:#fff}
 .el .new{position:absolute;top:-10px;right:-6px;background:var(--blue);color:#fff;font-size:.8rem;border:2px solid var(--ink);border-radius:10px;padding:0 5px}
 .card.game:hover{transform:none}
+/* pizza parlour */
+.pz-room{position:relative;display:flex;align-items:flex-end;gap:8px;min-height:100px;margin-bottom:12px;padding:30px 10px 8px;border:3px solid var(--ink);border-radius:16px;
+  background:linear-gradient(var(--blue-soft) 0 72%,#f6d7a6 72%)}
+.pz-hattie{position:relative;display:flex;flex-direction:column;align-items:center;flex:none}
+.pz-hface{font-size:2.6rem;line-height:1}
+.pz-hattie small{font-weight:700;font-size:.95rem}
+.pz-say{position:absolute;bottom:100%;left:-4px;margin-bottom:2px;white-space:nowrap;background:#fff;border:3px solid var(--ink);border-radius:14px 14px 14px 4px;padding:0 10px;font-weight:700;font-size:1.25rem;z-index:2}
+.pz-say:not([hidden]){animation:popin .4s}
+.pz-counter{width:14px;align-self:stretch;margin:-22px 0 -8px;background:#c9864a;border-left:3px solid var(--ink);border-right:3px solid var(--ink)}
+.pz-queue{flex:1;display:flex;align-items:flex-end;gap:4px;min-width:0;overflow:hidden}
+.pz-q{font-size:2.3rem;line-height:1;flex:none}
+.pz-q.walk{animation:pzwalk .8s ease-out}
+.pz-q.step{animation:pzstep .5s ease-out}
+@keyframes pzwalk{0%{transform:translateX(90px);opacity:0}60%{opacity:1}75%{transform:translateX(-4px) translateY(-6px)}}
+@keyframes pzstep{0%{transform:translateX(44px)}50%{transform:translateX(18px) translateY(-6px)}}
+.pz-door{font-size:2.6rem;line-height:1;flex:none}
+.pz-voice{position:absolute;top:4px;right:6px;font-size:1.1rem;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:0 6px;cursor:pointer}
+.pz-cust{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pz-face{font-size:3.4rem;line-height:1;flex:none;background:var(--blue-soft);border:3px solid var(--ink);border-radius:50%;width:76px;height:76px;display:flex;align-items:center;justify-content:center}
+.pz-face.happy{animation:popin .5s}
+.pz-bubble{flex:1;background:var(--pink-soft);border:3px solid var(--ink);border-radius:18px 18px 18px 4px;padding:8px 12px;font-size:1.3rem;line-height:1.25}
+.pz-bubble .want{display:inline-block;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:0 8px;margin:3px 4px 0 0;font-weight:700;white-space:nowrap}
+.pz-bubble .want.done{background:#c8f5d6}
+.pz-bubble .want.over{background:#ffd0d0}
+.pz-stage{position:relative;width:min(100%,380px);aspect-ratio:1;margin:0 auto 12px;border:3px solid var(--ink);border-radius:18px;overflow:hidden;
+  background:repeating-linear-gradient(45deg,#fff 0 18px,var(--pink-soft) 18px 36px)}
+.pz-pizza{position:absolute;inset:10%;border-radius:50%;background:#f3c27a;border:10px solid #d99a4e;box-shadow:inset 0 0 0 3px #b9773a,0 0 0 3px var(--ink)}
+.pz-sauce,.pz-cheese{position:absolute;border-radius:50%;transform:scale(0);transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.pz-sauce{inset:4%;background:radial-gradient(circle at 40% 35%,#ff6a4d,#d8341f)}
+.pz-cheese{inset:9%;background:radial-gradient(circle at 60% 40%,#fff1a8,#ffd24a);border-radius:46% 54% 50% 50%/52% 46% 54% 48%;opacity:.95}
+.pz-sauce.on,.pz-cheese.on{transform:scale(1)}
+.pz-tops{position:absolute;inset:0}
+.pz-top{position:absolute;font-size:clamp(1.5rem,6vw,2.1rem);line-height:1;transform:translate(-50%,-50%) rotate(var(--r,0deg));pointer-events:none}
+.pz-pep{display:block;width:1.05em;height:1.05em;border-radius:50%;background:radial-gradient(circle at 30% 30%,#e8604c 0 10%,transparent 11%),radial-gradient(circle at 65% 60%,#e8604c 0 9%,transparent 10%),#b8322a;border:2px solid #7d1f18}
+.pz-fly{position:fixed;z-index:20;pointer-events:none;transform:translate(-50%,-50%)}
+.pz-box{position:absolute;inset:8%;border:4px solid var(--ink);border-radius:12px;background:linear-gradient(#f8dcae,#e9bf7f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  box-shadow:5px 6px 0 var(--drop);font-size:1.6rem}
+.pz-box[hidden]{display:none}
+.pz-box span{font-size:3.4rem;background:#fff;border:3px solid var(--ink);border-radius:50%;width:84px;height:84px;display:flex;align-items:center;justify-content:center}
+.pz-box b{color:var(--deep-purple)}
+.pz-tray{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-bottom:12px}
+.pz-tray .btn{font-size:1.1rem;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.1;touch-action:manipulation}
+.pz-tray .btn .em{font-size:2rem;line-height:1}
+.pz-tray .btn:disabled,.pz-actions .btn:disabled{opacity:.45;cursor:default}
+.pz-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:8px}
 .ninja-wrap{position:relative;border:3px solid var(--ink);border-radius:14px;overflow:hidden;margin-top:12px;touch-action:none;background:#241a55}
 .ninja-wrap canvas{display:block;width:100%;touch-action:none;cursor:crosshair}
 .ninja-ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;background:rgba(27,18,64,.6);color:#fff;padding:16px}
@@ -469,6 +514,26 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
     <div class="found"><span>Found <b id="foundN">5</b> things</span><span class="row"><button class="btn small" id="hintBtn">💡 Hint</button><button class="btn small" id="mixReset">↺ Start again</button></span></div>
     <input class="namebox mixsearch" id="mixSearch" placeholder="🔍 Find a box…" autocomplete="off">
     <div class="elements" id="elements"></div>
+  </div>
+  <div class="card game pizza">
+    <h3>🍕 Hattie's Pizza Parlour</h3>
+    <p>Read the order, then tap the toppings to throw them on the pizza! When it matches, put it in the box and send it out on the scooter.</p>
+    <div class="pz-room">
+      <div class="pz-hattie"><span class="pz-say" id="pzSay" hidden>Hey dude! 👋</span><span class="pz-hface" aria-hidden="true">👧</span><small>Hattie</small></div>
+      <div class="pz-counter" aria-hidden="true"></div>
+      <div class="pz-queue" id="pzQueue" aria-label="Customers waiting in the queue"></div>
+      <div class="pz-door" aria-hidden="true">🚪</div>
+      <button class="pz-voice" id="pzVoice" aria-label="Turn Hattie's voice on or off">🔊</button>
+    </div>
+    <div class="pz-cust"><div class="pz-face" id="pzFace" aria-hidden="true">🐱</div><div class="pz-bubble" id="pzOrder" role="status"></div></div>
+    <div class="pz-stage" id="pzStage">
+      <div class="pz-pizza" id="pzPizza"><div class="pz-sauce" id="pzSauce"></div><div class="pz-cheese" id="pzCheese"></div><div class="pz-tops" id="pzTops"></div></div>
+      <div class="pz-box" id="pzBox" hidden><span>🍕</span><b>Hattie's Pizza</b></div>
+    </div>
+    <div class="pz-tray" id="pzTray"></div>
+    <div class="pz-actions"><button class="btn small" id="pzClear">🗑️ Start again</button><button class="btn go" id="pzBoxBtn">📦 Put it in the box</button><button class="btn save" id="pzSend" disabled>🛵 Send it out!</button></div>
+    <div class="mixmsg" id="pzMsg" role="status">Tap the toppings to throw them on!</div>
+    <div class="found"><span>Pizzas sent: <b id="pzServed">0</b></span><span>Stars: <b id="pzStars">0</b> ⭐</span></div>
   </div>
   <div class="card game">
     <h3>🥷 Ninja Fruit Slice</h3>
@@ -1038,6 +1103,110 @@ body.disco .disco-floor{transform:translateY(0);pointer-events:auto}
     var n=first[Math.floor(Math.random()*first.length)]+" "+second[Math.floor(Math.random()*second.length)];
     document.getElementById("nameOut").textContent=n+" ✨";bubbleRain(e.currentTarget,10);
   });
+
+  /* ---------- pizza parlour ---------- */
+  (function(){
+    var PZ="hattie-pizza",stage=document.getElementById("pzStage"),tops=document.getElementById("pzTops"),sauce=document.getElementById("pzSauce"),cheese=document.getElementById("pzCheese"),
+      box=document.getElementById("pzBox"),tray=document.getElementById("pzTray"),orderEl=document.getElementById("pzOrder"),faceEl=document.getElementById("pzFace"),
+      msgEl=document.getElementById("pzMsg"),boxBtn=document.getElementById("pzBoxBtn"),sendBtn=document.getElementById("pzSend"),clearBtn=document.getElementById("pzClear");
+    var TOPS=[["sauce","🥫","Sauce"],["cheese","🧀","Cheese"],["pep","","Pepperoni"],["mush","🍄","Mushroom"],["olive","🫒","Olive"],["pine","🍍","Pineapple"],
+      ["pepper","🫑","Pepper"],["corn","🌽","Sweetcorn"],["tom","🍅","Tomato"],["basil","🌿","Basil"]];
+    var NAME={},EM={};TOPS.forEach(function(t){NAME[t[0]]=t[2];EM[t[0]]=t[1];});
+    var CUST=[["🐱","Kitty"],["🐶","Puppy"],["🦄","Unicorn"],["🐸","Froggy"],["🐼","Panda"],["🐰","Bunny"],["🐻","Bear"],["🐨","Koala"],["🦊","Fox"],["🐧","Penguin"],["🐷","Piggy"],["🐯","Tiger"]];
+    var saved={served:0,stars:0,voice:true};try{var s=JSON.parse(localStorage.getItem(PZ)||"null");if(s){saved.served=+s.served||0;saved.stars=+s.stars||0;saved.voice=s.voice!==false;}}catch(e){}
+    function save(){try{localStorage.setItem(PZ,JSON.stringify(saved));}catch(e){}}
+    var order,made,stage2="make",current=-1,queue=[],queueEl=document.getElementById("pzQueue"),sayEl=document.getElementById("pzSay"),voiceBtn=document.getElementById("pzVoice"),sayT;
+    /* the queue: customers wait in line, and Hattie says hey to everyone who comes in */
+    function freshCustomer(){var ci;do{ci=Math.floor(Math.random()*CUST.length);}while(ci===current||queue.indexOf(ci)>-1);return ci;}
+    function drawQueue(how){queueEl.innerHTML="";queue.forEach(function(ci,i){var q=document.createElement("span");q.className="pz-q";q.textContent=CUST[ci][0];q.title=CUST[ci][1];
+      if(!calm&&how)q.classList.add(how==="walk"&&i===queue.length-1?"walk":"step");queueEl.appendChild(q);});}
+    function speak(text){if(!saved.voice||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
+      try{var u=new SpeechSynthesisUtterance(text);u.lang="en-GB";u.pitch=1.4;u.rate=1.05;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+    function heyDude(){sayEl.hidden=false;clearTimeout(sayT);sayT=setTimeout(function(){sayEl.hidden=true;},2200);speak("Hey dude!");}
+    function comeIn(){queue.push(freshCustomer());drawQueue("walk");heyDude();}
+    function drawVoice(){voiceBtn.textContent=saved.voice?"🔊":"🔇";}
+    voiceBtn.addEventListener("click",function(){saved.voice=!saved.voice;save();drawVoice();if(saved.voice)speak("Hey dude!");else try{speechSynthesis.cancel();}catch(e){}});
+    drawVoice();
+    function topIcon(k){return k==="pep"?'<span class="pz-pep" style="display:inline-block;vertical-align:-0.15em"></span>':EM[k];}
+    function newOrder(){
+      // the next customer in the queue steps up to the counter, and someone new comes in the door
+      var ci=queue.length?queue.shift():freshCustomer();current=ci;drawQueue("step");setTimeout(comeIn,calm?0:650);
+      var pieces=TOPS.slice(2).map(function(t){return t[0];}),kinds=Math.min(3,1+Math.floor(saved.served/3)),most=Math.min(5,2+Math.floor(saved.served/4));
+      for(var i=pieces.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=pieces[i];pieces[i]=pieces[j];pieces[j]=t;}
+      order={who:CUST[ci],want:{sauce:1,cheese:1}};
+      pieces.slice(0,1+Math.floor(Math.random()*kinds)).forEach(function(k){order.want[k]=1+Math.floor(Math.random()*most);});
+      made={};stage2="make";tops.innerHTML="";sauce.classList.remove("on");cheese.classList.remove("on");box.hidden=true;box.style.transform="";
+      stage.querySelector(".pz-pizza").style.visibility="";
+      faceEl.textContent=CUST[ci][0];faceEl.classList.remove("happy");boxBtn.disabled=false;sendBtn.disabled=true;setTray(true);
+      msgEl.textContent=CUST[ci][1]+" is hungry! Tap the toppings to throw them on.";drawOrder();
+    }
+    function drawOrder(){
+      var h="Hello! I'm "+order.who[1]+". Please can I have a pizza with:<br>";
+      Object.keys(order.want).forEach(function(k){var n=order.want[k],got=made[k]||0;
+        h+='<span class="want'+(got===n?' done':got>n?' over':'')+'">'+topIcon(k)+" "+NAME[k]+(n>1||k!=="sauce"&&k!=="cheese"?" "+got+"/"+n:"")+(got===n?" ✔":got>n?" too many!":"")+"</span>";});
+      orderEl.innerHTML=h;
+    }
+    function setTray(on){tray.querySelectorAll("button").forEach(function(b){b.disabled=!on;});clearBtn.disabled=!on;}
+    TOPS.forEach(function(t){
+      var b=document.createElement("button");b.className="btn";b.innerHTML='<span class="em">'+(t[0]==="pep"?'<span class="pz-pep"></span>':t[1])+"</span>"+t[2];
+      b.addEventListener("click",function(){add(t[0],b);});tray.appendChild(b);
+    });
+    function add(k,btn){
+      if(stage2!=="make")return;
+      if(k==="sauce"||k==="cheese"){var layer=k==="sauce"?sauce:cheese;if(made[k]){msgEl.textContent="It's already got "+NAME[k].toLowerCase()+"!";return;}
+        made[k]=1;layer.classList.add("on");msgEl.textContent=k==="sauce"?"Spread the sauce! 🥫":"Sprinkle the cheese! 🧀";drawOrder();return;}
+      if(tops.children.length>=24){msgEl.textContent="That pizza is FULL! 😄";return;}
+      made[k]=(made[k]||0)+1;drawOrder();
+      msgEl.textContent=(order.want[k]?"":"Ooh, "+order.who[1]+" didn't ask for that! ")+["Splat!","Wheee!","Catch!","Yum!"][made[k]%4]+" "+NAME[k]+" ×"+made[k];
+      // land somewhere on the pizza, not too close to the crust
+      var x=50,y=50,bestGap=-1,rot=Math.round(Math.random()*60-30),spots=[].map.call(tops.children,function(p){return [parseFloat(p.style.left),parseFloat(p.style.top)];});
+      for(var tr=0;tr<8;tr++){var a=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*32,cx=50+Math.cos(a)*r,cy=50+Math.sin(a)*r,gap=99; // pick the emptiest spot
+        spots.forEach(function(s){gap=Math.min(gap,Math.hypot(s[0]-cx,s[1]-cy));});if(gap>bestGap){bestGap=gap;x=cx;y=cy;}}
+      var piece=document.createElement("span");piece.className="pz-top";piece.style.left=x+"%";piece.style.top=y+"%";piece.style.setProperty("--r",rot+"deg");
+      piece.innerHTML=k==="pep"?'<span class="pz-pep"></span>':EM[k];
+      if(calm||!piece.animate){tops.appendChild(piece);return;}
+      // throw it: fly from the button in an arc, then land on the pizza
+      var from=btn.getBoundingClientRect(),to=tops.getBoundingClientRect(),tx=to.left+to.width*x/100,ty=to.top+to.height*y/100,fx=from.left+from.width/2,fy=from.top+from.height/2;
+      var fly=piece.cloneNode(true);fly.className="pz-top pz-fly";fly.style.left=fx+"px";fly.style.top=fy+"px";document.body.appendChild(fly);
+      var lift=Math.min(fy,ty)-90;
+      fly.animate([{left:fx+"px",top:fy+"px",transform:"translate(-50%,-50%) rotate(0deg) scale(1)"},
+        {left:(fx+tx)/2+"px",top:lift+"px",transform:"translate(-50%,-50%) rotate("+(rot+180)+"deg) scale(1.4)",offset:.5},
+        {left:tx+"px",top:ty+"px",transform:"translate(-50%,-50%) rotate("+(rot+360)+"deg) scale(1)"}],{duration:520,easing:"ease-in-out"}).onfinish=function(){
+        fly.remove();tops.appendChild(piece);piece.animate([{transform:"translate(-50%,-50%) rotate("+rot+"deg) scale(1.35)"},{transform:"translate(-50%,-50%) rotate("+rot+"deg) scale(1)"}],{duration:180});};
+    }
+    clearBtn.addEventListener("click",function(){if(stage2!=="make")return;made={};tops.innerHTML="";sauce.classList.remove("on");cheese.classList.remove("on");drawOrder();msgEl.textContent="Fresh dough! Start again.";});
+    boxBtn.addEventListener("click",function(){
+      if(stage2!=="make")return;if(!Object.keys(made).length){msgEl.textContent="Put something on the pizza first! 🍕";return;}
+      stage2="boxed";setTray(false);boxBtn.disabled=true;sendBtn.disabled=false;box.hidden=false;
+      if(!calm&&box.animate)box.animate([{transform:"translateY(-110%)"},{transform:"translateY(4%)",offset:.8},{transform:"translateY(0)"}],{duration:500,easing:"ease-out"});
+      setTimeout(function(){stage.querySelector(".pz-pizza").style.visibility="hidden";},calm?0:450);
+      msgEl.textContent="Boxed up! Now send it out! 🛵";
+    });
+    sendBtn.addEventListener("click",function(){
+      if(stage2!=="boxed")return;stage2="sent";sendBtn.disabled=true;
+      var go=function(){box.hidden=true;judge();};
+      if(calm||!box.animate)return go();
+      box.innerHTML='<span>🍕</span><b>Hattie\'s Pizza</b><i style="position:absolute;right:-6%;bottom:-8%;font-size:3.4rem;font-style:normal">🛵</i>';
+      box.animate([{transform:"translateX(0) scale(1)"},{transform:"translateX(-6%) scale(.9)",offset:.2},{transform:"translateX(160%) scale(.7)"}],{duration:900,easing:"ease-in"}).onfinish=function(){
+        box.innerHTML="<span>🍕</span><b>Hattie's Pizza</b>";go();};
+    });
+    function judge(){
+      var diffs=[],off=0;
+      Object.keys(NAME).forEach(function(k){var want=order.want[k]||0,got=made[k]||0;if(want===got)return;off+=Math.abs(want-got);
+        if(k==="sauce"||k==="cheese")diffs.push(want?"I wanted "+NAME[k].toLowerCase()+"!":"I didn't want "+NAME[k].toLowerCase()+"!");
+        else diffs.push(want?"I asked for "+want+" "+NAME[k].toLowerCase()+" but got "+got+".":"I didn't order "+NAME[k].toLowerCase()+", but it's yummy!");});
+      var stars=off===0?3:off<=2?2:1;saved.served++;saved.stars+=stars;save();
+      document.getElementById("pzServed").textContent=saved.served;document.getElementById("pzStars").textContent=saved.stars;
+      faceEl.classList.add("happy");
+      orderEl.innerHTML=stars===3?"Yummy! It's PERFECT! Thank you, Hattie! "+"⭐".repeat(3):diffs[0]+" Still tasty, thank you! "+"⭐".repeat(stars);
+      msgEl.textContent=stars===3?"Perfect pizza! 🎉":"Nearly! "+(diffs.length>1?"There were a few mix-ups.":"Just one mix-up.");
+      if(stars===3)bubbleRain(stage,14);
+      setTimeout(newOrder,2600);
+    }
+    document.getElementById("pzServed").textContent=saved.served;document.getElementById("pzStars").textContent=saved.stars;
+    queue=[freshCustomer()];queue.push(freshCustomer());queue.push(freshCustomer());
+    newOrder();
+  })();
 
   /* ---------- bubble pop ---------- */
   var arena=document.getElementById("arena"),msg=document.getElementById("arenaMsg"),scoreEl=document.getElementById("popScore"),timeEl=document.getElementById("popTime");

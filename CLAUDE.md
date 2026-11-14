@@ -34,7 +34,7 @@ Hattie's Worlds is her business idea: designing imaginary worlds and bringing th
    Hattie's favourite colours (pink, purple and blue) on the light blue background.
 4. Never break her saved data. These localStorage keys must keep the same names and formats:
    `hattie-worlds-saved`, `hattie-mixer`, `hattie-ninja`, `hattie-stacker`, `hattie-jar`,
-   `hattie-drawings`, `hattie-orders`. If a format has to change, migrate old data on load.
+   `hattie-drawings`, `hattie-orders`, `hattie-pizza`. If a format has to change, migrate old data on load.
 5. Everything must be friendly and suitable for a young child: no scary, violent or grown-up
    content, no links to other websites, and nothing that collects personal information.
 6. Wrap new storage reads and writes in try/catch, and respect `prefers-reduced-motion`.
